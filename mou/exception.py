@@ -1,0 +1,2 @@
+class PathError(BaseException):
+    pass
