@@ -1,74 +1,8 @@
 [
   {
-    "id": 6,
-    "session_id": "10268d2e-62b9-417f-8ccb-e272b4b20a6c",
+    "id": 0,
+    "session_id": "5fa5ca33-97a4-412a-9b25-efe2ed5e2be2",
     "user_id": 0,
-    "expired_time": 1536592760.1794744
-  },
-  {
-    "id": 7,
-    "session_id": "365e0cb2-f4ac-409d-bcde-1657a5c781d3",
-    "user_id": 0,
-    "expired_time": 1536637980.909995
-  },
-  {
-    "id": 8,
-    "session_id": "bc553aaa-7b8f-447f-b1f3-e1eb391270c1",
-    "user_id": 1,
-    "expired_time": 1536638007.7114992
-  },
-  {
-    "id": 9,
-    "session_id": "6dd6c0ce-27cd-4d39-915d-e7d94333c771",
-    "user_id": 0,
-    "expired_time": 1536638267.6965866
-  },
-  {
-    "id": 10,
-    "session_id": "dc0f6e66-ce98-4b5e-91a0-d56eda5cdd6d",
-    "user_id": 1,
-    "expired_time": 1536638270.3721185
-  },
-  {
-    "id": 11,
-    "session_id": "004f3c74-4ddd-4d8b-a90a-5f5f55f03b2a",
-    "user_id": 0,
-    "expired_time": 1536658738.4062996
-  },
-  {
-    "id": 12,
-    "session_id": "75649da7-5f44-4eb8-8b21-378f64f8ac6f",
-    "user_id": 0,
-    "expired_time": 1536658817.9128728
-  },
-  {
-    "id": 13,
-    "session_id": "16d838f8-54b3-4b0c-8518-110c08c7fb07",
-    "user_id": 0,
-    "expired_time": 1536658895.443725
-  },
-  {
-    "id": 14,
-    "session_id": "7f689980-ce36-4db0-96d9-6ab7d55aeadb",
-    "user_id": 0,
-    "expired_time": 1536726460.579221
-  },
-  {
-    "id": 15,
-    "session_id": "caced6ba-9291-4d6d-a560-89b368a0c7fa",
-    "user_id": 0,
-    "expired_time": 1536741395.3790026
-  },
-  {
-    "id": 16,
-    "session_id": "18fe1847-f9d2-4804-9c94-c056b43723ac",
-    "user_id": 0,
-    "expired_time": 1536742957.0359209
-  },
-  {
-    "id": 17,
-    "session_id": "ded9d0b3-c96b-4af3-84ad-1001d95b88fe",
-    "user_id": 0,
-    "expired_time": 1536748578.5129886
+    "expired_time": 1536768189.6993291
   }
 ]

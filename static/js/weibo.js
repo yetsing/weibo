@@ -20,9 +20,16 @@ var apiWeiboUpdate = function(form, callback) {
     ajax('POST', path, form, callback)
 }
 
-var weiboTemplate = function(weibo, comments) {
+var weiboTemplate = function(weibo, comments, username) {
+    var button = ''
+    if (username == weibo.username) {
+        var button = `
+        <a href="javascript:void(0);" class="weibo-delete" style="font-size: smaller">删除</a>
+        <a href="javascript:void(0);" class="weibo-edit" style="font-size: smaller">编辑</a>
+        `
+    }
     var t = `
-        <section class="post">
+        <section class="post weibo-cell" data-id="${weibo.id}">
             <header class="post-header">
                 <img width="48" height="48" alt="${weibo.username}&#x27;s avatar" class="post-avatar" src="/static/images/default.jpg">
                 <p class="post-meta">
@@ -34,9 +41,11 @@ var weiboTemplate = function(weibo, comments) {
             <div class="post-description">
                 <p class="weibo-content">${weibo.content}</p>
             </div>
+            ${button}
+            <a href="javascript:void(0);" class="weibo-comment">${weibo.comment_count} 条评论</a>
             <span>updated at ${weibo.updated_time}</span>
         </section>
-        <h1 class="content-subhead"> </h1>
+        <h1 class="content-subhead update-form"> </h1>
     `
     return t
 }
@@ -59,17 +68,17 @@ var weiboCommentTemplate = function(comments) {
 
 var weiboUpdateTemplate = function(content) {
     var t = `
-        <div class="weibo-update-form">
-            <input class="weibo-update-input" value="${content}">
-            <button class="weibo-update">更新</button>
+        <div class="weibo-update-form pure-form pure-form-stacked">
+            <textarea class="weibo-update-input" rows="5" style="width: 100%">${content}</textarea>
+            <button class="weibo-update pure-button pure-button-primary">更新</button>
         </div>
     `
     return t
 }
 
-var insertWeibo = function(weibo) {
+var insertWeibo = function(weibo, username) {
     var comments = weiboCommentTemplate(weibo.comments)
-    var weiboCell = weiboTemplate(weibo, comments)
+    var weiboCell = weiboTemplate(weibo, comments, username)
     // 插入 weibo-list
     var weiboList = e('#id-weibo-list')
     weiboList.insertAdjacentHTML('afterbegin', weiboCell)
@@ -77,16 +86,17 @@ var insertWeibo = function(weibo) {
 
 var insertUpdateForm = function(content, weiboCell) {
     var updateForm = weiboUpdateTemplate(content)
-    weiboCell.insertAdjacentHTML('beforebegin', updateForm)
+    weiboCell.insertAdjacentHTML('beforeend', updateForm)
 }
 
 var loadWeibos = function() {
     apiWeiboAll(function(weibos) {
         log('load all weibos', weibos)
         // 循环添加到页面中
+        var username = weibos.pop(-1).username
         for(var i = 0; i < weibos.length; i++) {
             var weibo = weibos[i]
-            insertWeibo(weibo)
+            insertWeibo(weibo, username)
         }
     })
 }
@@ -103,7 +113,7 @@ var bindEventWeiboAdd = function() {
         }
         apiWeiboAdd(form, function(weibo) {
             // 收到返回的数据, 插入到页面中
-            insertWeibo(weibo)
+            insertWeibo(weibo, weibo.username)
             input.value = ''
         })
     })
@@ -152,11 +162,11 @@ var bindEventWeiboEdit = function() {
         log('点到了编辑按钮')
         weiboCell = self.closest('.weibo-cell')
         weiboId = weiboCell.dataset['id']
-        weiboCommentList = e('.weibo-comment-list', weiboCell)
+        // weiboCommentList = e('.weibo-comment-list', weiboCell)
         var weiboSpan = e('.weibo-content', weiboCell)
         var content = weiboSpan.innerText
         // 插入编辑输入框
-        insertUpdateForm(content, weiboCommentList)
+        insertUpdateForm(content, weiboCell)
     } else {
         log('点到了 weibo cell')
     }

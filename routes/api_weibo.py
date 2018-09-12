@@ -73,11 +73,14 @@ def index():
 # 而不是 html 格式的数据
 @weibo.route('/all')
 def all():
+    u = current_user()
     weibos = Weibo.all_json()
     for i, w in enumerate(weibos):
         # 添加用户名和评论
         insert_username(w)
         insert_comments(w)
+    d = {'username': u.username}
+    weibos.append(d)
     return make_json(weibos)
 
 

@@ -1,8 +1,1 @@
-[
-  {
-    "id": 0,
-    "content": "",
-    "user_id": 0,
-    "weibo_id": 1
-  }
-]
+[]

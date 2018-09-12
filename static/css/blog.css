@@ -181,3 +181,7 @@ span {
     color: rgb(61, 146, 201);
     float: right;
 }
+
+.weibo-content {
+    margin-bottom: 50px;
+}

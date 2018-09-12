@@ -3,26 +3,6 @@
     "id": 0,
     "username": "gua",
     "password": "dabe8fbbed00dbf72144618dfa56b6eff40207b290013639faa13ecb09f90c3b",
-    "role": "normal"
-  },
-  {
-    "id": 1,
-    "username": "guagua",
-    "password": "dabe8fbbed00dbf72144618dfa56b6eff40207b290013639faa13ecb09f90c3b",
-    "role": "normal"
-  },
-  {
-    "id": 2,
-    "username": "黑江美咲",
-    "password": "dabe8fbbed00dbf72144618dfa56b6eff40207b290013639faa13ecb09f90c3b",
-    "role": {
-      "__enum__": "normal"
-    }
-  },
-  {
-    "id": 3,
-    "username": "黑江美咲",
-    "password": "dabe8fbbed00dbf72144618dfa56b6eff40207b290013639faa13ecb09f90c3b",
     "role": {
       "__enum__": "normal"
     }
