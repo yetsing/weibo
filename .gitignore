@@ -6,3 +6,4 @@ log.*
 .DS_store
 secret.py
 *.7z
+*.txt

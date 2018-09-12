@@ -22,19 +22,21 @@ var apiWeiboUpdate = function(form, callback) {
 
 var weiboTemplate = function(weibo, comments) {
     var t = `
-        <div class="weibo-cell" data-id="${weibo.id}">
-            <span class="weibo-content">${weibo.content}</span>
-            <span> from ${weibo.username}</span>
-            <span>创建时间：${weibo.created_time}</span>
-            <span>更新时间：${weibo.updated_time}</span>
-            <button class="weibo-delete">删除</button>
-            <button class="weibo-edit">编辑</button>
-            <div class="weibo-comment-list">${comments}</div>
-            <div class="weibo-comment-form">
-                <input class="weibo-comment-input">
-                <button class="weibo-comment-add">添加评论</button>
+        <section class="post">
+            <header class="post-header">
+                <img width="48" height="48" alt="${weibo.username}&#x27;s avatar" class="post-avatar" src="/static/images/default.jpg">
+                <p class="post-meta">
+                    By <a href="#" class="post-author">${weibo.username}</a>
+                    created at
+                    <a class="post-category post-category-pure" href="#">${weibo.created_time}</a>
+                </p>
+            </header>
+            <div class="post-description">
+                <p class="weibo-content">${weibo.content}</p>
             </div>
-        </div>
+            <span>updated at ${weibo.updated_time}</span>
+        </section>
+        <h1 class="content-subhead"> </h1>
     `
     return t
 }
@@ -70,7 +72,7 @@ var insertWeibo = function(weibo) {
     var weiboCell = weiboTemplate(weibo, comments)
     // 插入 weibo-list
     var weiboList = e('#id-weibo-list')
-    weiboList.insertAdjacentHTML('beforeend', weiboCell)
+    weiboList.insertAdjacentHTML('afterbegin', weiboCell)
 }
 
 var insertUpdateForm = function(content, weiboCell) {

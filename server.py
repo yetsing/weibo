@@ -10,7 +10,7 @@ def configure():
     register_route(weibo, url_prefix='/weibo')
     register_route(comment, url_prefix='/comment')
     register_route(default)
-    register_route(user, url_prefix='/user')
+    register_route(user)
 
 
 if __name__ == '__main__':

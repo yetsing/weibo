@@ -78,4 +78,3 @@ class Request(threading.local):
         把 body 中的 json 格式字符串解析成 dict 或者 list 并返回
         """
         return json.loads(self.body)
-

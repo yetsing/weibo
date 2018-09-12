@@ -17,7 +17,15 @@ def static(request):
     path = parent + filename
     if not os.path.isfile(path):
         raise FileNotFoundError("No such file or directory: '{}'".format(path))
+    file_type = filename.split('.')[-1]
+    d = {
+        'css': 'text/css',
+        'js': 'application/javascript',
+    }
+    default = 'image/'.format(file_type)
     with open(path, 'rb') as f:
-        header = b'HTTP/1.x 200 OK\r\n\r\n'
-        r = header + f.read()
+        header = 'HTTP/1.x 200 OK\r\ncontent-type: {}\r\n\r\n'.format(
+            d.get(file_type, default)
+        )
+        r = header.encode() + f.read()
         return r

@@ -2,17 +2,62 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>注册页面</title>
+    <title>注册登录页面</title>
+    <link href="https://cdn.bootcss.com/pure/1.0.0/pure-min.css" rel="stylesheet">
+    <style>
+        body {
+            text-align: center;
+            background-color: #f1f1f1;
+        }
+
+        .main {
+            width: 300px;
+            margin: 60px auto 0;
+            padding: 50px 50px 30px;
+            background-color: #fff;
+            border-radius: 4px;
+            box-shadow: 0 0 8px rgba(0,0,0,.1);
+            vertical-align: middle;
+            display: inline-block;
+        }
+
+        .active {
+            font-weight: 700;
+            color: #ea6f5a;
+            border-bottom: 2px solid #ea6f5a;
+        }
+
+        .normal-title {
+            margin-bottom: 60px;
+            font-size: 18px;
+        }
+
+        a {
+            padding: 10px;
+            color: #969696;
+            cursor: pointer;
+            text-decoration: none;
+            background-color: transparent;
+        }
+    </style>
 </head>
 <body>
-    <h1>注册</h1>
-    <form action="/user/register" method="post">
-        <input type="text" name="username" placeholder="请输入用户名">
+<div class="sign">
+<div class="main">
+    <div class="normal-title">
+        <a class="" href="/login/view">登录</a>
+        <b>·</b>
+        <a class="active" href="/register/view">注册</a>
+    </div>
+    <form class="pure-form pure-form-stacked" action="/register" method="post">
+        <input type="text" name="username" placeholder="请输入用户名" style="width: 100%; margin: 0 auto">
         <br>
-        <input type="text" name="password" placeholder="请输入密码">
+        <input type="text" name="password" placeholder="请输入密码" style="width: 100%; margin: 0 auto">
         <br>
-        <button type="submit">注册</button>
+        <button type="submit" class="pure-button pure-button-primary" style="width: 100%; border-radius: 25px; background-color: #42c02e">注册</button>
     </form>
     <h3>{{result}}</h3>
+</div>
+</div>
 </body>
 </html>

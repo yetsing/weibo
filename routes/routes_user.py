@@ -33,7 +33,7 @@ def login():
     )
     Session.new(form)
 
-    r = redirect('/user/login/view?result={}'.format(result))
+    r = redirect('/login/view?result={}'.format(result))
     response = make_response(r)
     response.set_cookie('session_id', session_id)
     return response
@@ -62,7 +62,7 @@ def register():
     u, result = User.register(form)
     log('register post', result)
 
-    return redirect('/user/register/view?result={}'.format(result))
+    return redirect('/register/view?result={}'.format(result))
 
 
 @user.route('/register/view')

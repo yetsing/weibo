@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="个人学习制作的博客网站">
+    <title>博客</title>
+
+    <link href="https://cdn.bootcss.com/pure/1.0.0/pure-min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/pure/1.0.0/grids-responsive-min.css" rel="stylesheet">
+    <!--<link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-" crossorigin="anonymous">-->
+    <!--<link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/grids-responsive-min.css">-->
+    <link rel="stylesheet" href="/static/css/blog.css">
+    <link rel="stylesheet" media="all" href="/static/css/nav.css">
+    <!--<link rel="stylesheet" href="./css/layouts/blog.css">-->
+    <!--<link rel="stylesheet" media="all" href="./5分钟 搭建免费个人博客 - 简书_files/nav.css">-->
+</head>
+<body>
+
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="width-limit">
+        {% if user %}
+        <a class="btn box" id="profile" href="/register/view">我的</a>
+        {% else %}
+        <a class="btn box" id="sign_up" href="/register/view">注册</a>
+        <a class="btn box" id="sign_in" href="/login/view">登录</a>
+        {% endif %}
+        <a class="btn box" id="index" href="/weibo/index">主页</a>
+    </div>
+</nav>
+
+
+
+<div id="layout" class="pure-g">
+
+
+    <div class="content pure-u-1 pure-u-md-3-4">
+
+        <div class="pure-form pure-form-stacked">
+            <textarea id='id-input-weibo' rows="5" style="width: 100%"></textarea>
+            <button id='id-button-add' class="pure-button pure-button-primary">发表</button>
+        </div>
+        <div>
+            <!-- A wrapper for all the blog posts -->
+            <div class="posts">
+                <h1 class="content-subhead">最近发布</h1>
+                <div id="id-weibo-list">
+                </div>
+            </div>
+
+
+            <div class="footer">
+                <div class="pure-menu pure-menu-horizontal">
+                    <ul>
+                        <li class="pure-menu-item"><a href="http://purecss.io/" class="pure-menu-link">About</a></li>
+                        <li class="pure-menu-item"><a href="http://twitter.com/yuilibrary/" class="pure-menu-link">Twitter</a>
+                        </li>
+                        <li class="pure-menu-item"><a href="http://github.com/pure-css/pure/" class="pure-menu-link">GitHub</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+        <script src='/static/js/gua.js'></script>
+        <script src='/static/js/weibo.js'></script>
+        <script src='/static/js/comment.js'></script>
+</body>
+</html>
