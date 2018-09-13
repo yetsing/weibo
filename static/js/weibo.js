@@ -20,7 +20,7 @@ var apiWeiboUpdate = function(form, callback) {
     ajax('POST', path, form, callback)
 }
 
-var weiboTemplate = function(weibo, comments, username) {
+var weiboTemplate = function(weibo, username) {
     var button = ''
     if (username == weibo.username) {
         var button = `
@@ -31,38 +31,22 @@ var weiboTemplate = function(weibo, comments, username) {
     var t = `
         <section class="post weibo-cell" data-id="${weibo.id}">
             <header class="post-header">
-                <img width="48" height="48" alt="${weibo.username}&#x27;s avatar" class="post-avatar" src="/static/images/default.jpg">
+                <img width="48" height="48" alt="${weibo.username}" class="post-avatar" src="/static/images/default.jpg">
                 <p class="post-meta">
-                    By <a href="#" class="post-author">${weibo.username}</a>
+                    By <a href="javascript:void(0);" class="post-author" style="font-weight: bolder;">${weibo.username}</a>
                     created at
-                    <a class="post-category post-category-pure" href="#">${weibo.created_time}</a>
+                    <a href="javascript:void(0);" style="color: #8590a6;">${weibo.created_time}</a>
+                    ${button}
                 </p>
             </header>
             <div class="post-description">
                 <p class="weibo-content">${weibo.content}</p>
             </div>
-            ${button}
-            <a href="javascript:void(0);" class="weibo-comment">${weibo.comment_count} 条评论</a>
-            <span>updated at ${weibo.updated_time}</span>
+            <a href="javascript:void(0);" class="weibo-comment-all">${weibo.comment_count} 条评论</a>
+            <span class="weibo-updated-time">updated at ${weibo.updated_time}</span>
         </section>
         <h1 class="content-subhead update-form"> </h1>
     `
-    return t
-}
-
-var weiboCommentTemplate = function(comments) {
-    var t = ``
-    for(var i = 0; i < comments.length; i++) {
-        var comment = comments[i]
-        t += `
-            <div class="weibo-comment-cell" data-id="${comment.id}">
-                <span>${comment.username}: </span>
-                <span class="weibo-comment-content">${comment.content}</span>
-                <button class="weibo-comment-edit">编辑</button>
-                <button class="weibo-comment-delete">删除</button>
-            </div>
-        `
-    }
     return t
 }
 
@@ -77,8 +61,7 @@ var weiboUpdateTemplate = function(content) {
 }
 
 var insertWeibo = function(weibo, username) {
-    var comments = weiboCommentTemplate(weibo.comments)
-    var weiboCell = weiboTemplate(weibo, comments, username)
+    var weiboCell = weiboTemplate(weibo, username)
     // 插入 weibo-list
     var weiboList = e('#id-weibo-list')
     weiboList.insertAdjacentHTML('afterbegin', weiboCell)
@@ -134,11 +117,11 @@ var bindEventWeiboDelete = function() {
     log(self.classList)
     if (self.classList.contains('weibo-delete')) {
         log('点到了删除按钮')
-        weiboId = self.parentElement.dataset['id']
+        weiboCell = self.closest('.weibo-cell')
+        weiboId = weiboCell.dataset['id']
         apiWeiboDelete(weiboId, function(r) {
             log('apiWeiboDelete', r.message)
-            // 删除 self 的父节点
-            self.parentElement.remove()
+            weiboCell.remove()
             alert(r.message)
         })
     } else {
@@ -157,9 +140,10 @@ var bindEventWeiboEdit = function() {
     // 通过比较被点击元素的 class
     // 来判断元素是否是我们想要的
     // classList 属性保存了元素所有的 class
-    log(self.classList)
-    if (self.classList.contains('weibo-edit')) {
+    log(self.classList, typeof(self.classList))
+    if (self.classList.contains('weibo-edit') && (!self.classList.contains('active'))) {
         log('点到了编辑按钮')
+        self.classList.add('active')
         weiboCell = self.closest('.weibo-cell')
         weiboId = weiboCell.dataset['id']
         // weiboCommentList = e('.weibo-comment-list', weiboCell)
@@ -205,6 +189,8 @@ var bindEventWeiboUpdate = function() {
 
             var updateForm = e('.weibo-update-form', weiboCell)
             updateForm.remove()
+            editButton = e('.weibo-edit', weiboCell)
+            editButton.classList.remove('active')
         })
     } else {
         log('点到了 weibo cell')

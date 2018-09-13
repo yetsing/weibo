@@ -115,6 +115,7 @@ class Model(object):
         models = []
 
         for m in cls.all():
+            print('every comment', m)
             exist = True
             for k, v in kwargs.items():
                 if not hasattr(m, k) or not getattr(m, k) == v:

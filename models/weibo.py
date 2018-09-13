@@ -14,7 +14,7 @@ class Weibo(Model):
         self.user_id = form.get('user_id', None)
         self.created_time = form.get('created_time', -1)
         self.updated_time = form.get('updated_time', -1)
-        self.comment_count = form.get('comment_count', 0)
+        self.comment_count = len(self.comments())
 
     def comments(self):
         cs = Comment.find_all(weibo_id=self.id)

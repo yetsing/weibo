@@ -1,16 +1,44 @@
+var apiWeiboCommentAll = function(weiboId, callback) {
+    var path = `/comment/all?weibo_id=${weiboId}`
+    ajax('GET', path, '', callback)
+}
+
 var apiWeiboCommentAdd = function(form, callback) {
     var path = '/comment/add'
     ajax('POST', path, form, callback)
 }
 
-var apiWeiboCommentDelete = function(comment_id, callback) {
-    var path = `/comment/delete?id=${comment_id}`
+var apiWeiboCommentDelete = function(commentId, callback) {
+    var path = `/comment/delete?id=${commentId}`
     ajax('GET', path, '', callback)
 }
 
 var apiWeiboCommentUpdate = function(form, callback) {
     var path = '/comment/update'
     ajax('POST', path, form, callback)
+}
+
+var commentTemplate = function(comment, username) {
+    var button = ''
+    if (username == comment.username) {
+        var button = `
+        <a href="javascript:void(0);" class="weibo-comment-delete post-category post-category-pure" style="font-size: smaller">删除</a>
+        `
+    }
+    var t = `
+        <div class="weibo-comment-cell" data-id="${comment.id}">
+            <div style="margin-left: 12px; margin-bottom: 10px;">
+                <span style="color: rgb(61, 146, 201); font-weight: bolder;">${comment.username}</span>
+                ${button}
+                <span style="float: right; color: #8590a6;">${comment.updated_time}</span>
+            </div>
+            <div style="margin-left: 12px;">
+                ${comment.content}
+            </div>
+        </div>
+        <h1 class="content-subhead update-form"> </h1>
+    `
+    return t
 }
 
 var weiboCommentUpdateTemplate = function(content) {
@@ -23,22 +51,55 @@ var weiboCommentUpdateTemplate = function(content) {
     return t
 }
 
-var insertWeiboComment = function(comment, weiboCommentList) {
-    var t = `
-        <div class="weibo-comment-cell" data-id="${comment.id}">
-            <span>${comment.username}: </span>
-            <span class="weibo-comment-content">${comment.content}</span>
-            <button class="weibo-comment-edit">编辑</button>
-            <button class="weibo-comment-delete">删除</button>
+var insertWeiboComment = function(comment, username, weiboCommentList) {
+    var commentCell = commentTemplate(comment, username)
+    weiboCommentList.insertAdjacentHTML('afterbegin', commentCell)
+}
+
+var insertWeiboCommentList = function(weiboCommentList, weiboCell) {
+    var weiboComments = `
+    <div class="weibo-comment-list">
+        ${weiboCommentList}
+        <div class="weibo-comment-add-form pure-form">
+            <input class="weibo-comment-input" placeholder="写下你的评论..." style="margin-left: 10px; width: 80%; height: 30px;">
+            <button class="weibo-comment-add pure-button pure-button-primary" style="height: 30px">评论</button>
         </div>
+    </div>
     `
-    weiboCommentList.insertAdjacentHTML('beforeend', t)
+    weiboCell.insertAdjacentHTML('beforeend', weiboComments)
 }
 
 var insertCommentUpdateForm = function(content, weiboCommentCell) {
     var updateForm = weiboCommentUpdateTemplate(content)
     weiboCommentCell.insertAdjacentHTML('beforeend', updateForm)
 }
+
+var bindEventWeiboCommentAll = function() {
+    var weiboList = e('#id-weibo-list')
+    weiboList.addEventListener('click', function(event) {
+        log(event)
+        var self = event.target
+        log('被点击的元素', self)
+        log(self.classList)
+        if (self.classList.contains('weibo-comment-all')) {
+            log('显示该 weibo 的所有评论')
+            var weiboCell = self.closest('.weibo-cell')
+            var weiboId = weiboCell.dataset['id']
+            apiWeiboCommentAll(weiboId, function(comments) {
+                log('load this weibo commnets', comments)
+                // 循环添加到页面中
+                var username = comments.pop(-1).username
+                var weiboCommentList = ''
+                for(var i = 0; i < comments.length; i++) {
+                    var comment = comments[i]
+                    weiboCommentList += commentTemplate(comment, username)
+                }
+                insertWeiboCommentList(weiboCommentList, weiboCell)
+            })
+        }
+    })
+}
+
 
 var bindEventWeiboCommentAdd = function() {
     var weiboList = e('#id-weibo-list')
@@ -66,7 +127,7 @@ var bindEventWeiboCommentAdd = function() {
         }
         apiWeiboCommentAdd(form, function(comment) {
             // 收到返回的数据, 插入到页面中
-            insertWeiboComment(comment, weiboCommentList)
+            insertWeiboComment(comment, comment.username, weiboCommentList)
             input.value = ''
         })
     } else {
@@ -166,6 +227,7 @@ var bindEventWeiboCommentUpdate = function() {
 })}
 
 var __main = function() {
+    bindEventWeiboCommentAll()
     bindEventWeiboCommentAdd()
     bindEventWeiboCommentDelete()
     bindEventWeiboCommentEdit()

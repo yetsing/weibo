@@ -13,6 +13,8 @@ class Comment(Model):
         # 和别的数据关联的方式, 用 user_id 表明拥有它的 user 实例
         self.user_id = form.get('user_id', user_id)
         self.weibo_id = int(form.get('weibo_id', -1))
+        self.created_time = form.get('created_time', -1)
+        self.updated_time = form.get('updated_time', -1)
 
     def user(self):
         u = User.find_by(id=self.user_id)

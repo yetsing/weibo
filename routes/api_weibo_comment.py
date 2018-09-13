@@ -10,6 +10,7 @@ from routes import (
     current_user
 )
 from models.comment import Comment
+from models.user import User
 
 comment = Mou('comment')
 
@@ -34,6 +35,27 @@ def comment_owner_required(route_function):
             return make_json(d)
 
     return f
+
+
+# 添加用户名
+def insert_username(data):
+    user_id = data.pop('user_id')
+    u = User.find_by(id=user_id)
+    data['username'] = u.username
+
+
+@comment.route('/all')
+def all():
+    u = current_user()
+    weibo_id = int(request.query.get('weibo_id'))
+    comments = Comment.find_all(weibo_id=weibo_id)
+    data = [c.json() for c in comments]
+    for d in data:
+        # 添加用户名
+        insert_username(d)
+    ud = {'username': u.username}
+    data.append(ud)
+    return make_json(data)
 
 
 @comment.route('/add')
@@ -65,9 +87,6 @@ def delete():
 @ajax_login_required
 @comment_owner_required
 def update():
-    """
-    用于增加新 weibo 的路由函数
-    """
     form = request.json
     log('api weibo update form', form)
     t = Comment.update(**form)

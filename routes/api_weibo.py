@@ -46,27 +46,13 @@ def insert_username(data):
     data['username'] = u.username
 
 
-# 给返回的 weibo 添加评论
-def insert_comments(weibo):
-    weibo_id = weibo['id']
-    comments = Comment.find_all(weibo_id=weibo_id)
-    comments = [c.json() for c in comments]
-    # 添加评论的用户名
-    for i, c in enumerate(comments):
-        insert_username(c)
-
-    weibo['comments'] = comments
-
-
 @weibo.route('/index')
 def index():
     """
     weibo 首页的路由函数
     """
     u = current_user()
-    weibos = Weibo.find_all(user_id=u.id)
-    # 替换模板文件中的标记字符串
-    return render_template('weibo-index.html', weibos=weibos, user=u)
+    return render_template('weibo-index.html', user=u)
 
 
 # 本文件只返回 json 格式的数据
@@ -76,9 +62,8 @@ def all():
     u = current_user()
     weibos = Weibo.all_json()
     for i, w in enumerate(weibos):
-        # 添加用户名和评论
+        # 添加用户名
         insert_username(w)
-        insert_comments(w)
     d = {'username': u.username}
     weibos.append(d)
     return make_json(weibos)
