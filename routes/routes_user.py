@@ -47,7 +47,7 @@ def login_view():
 
     return render_template(
         'login.html',
-        username=u.username,
+        user=u,
         result=result,
     )
 
@@ -62,7 +62,7 @@ def register():
     u, result = User.register(form)
     log('register post', result)
 
-    return redirect('/register/view?result={}'.format(result))
+    return redirect('/login/view?result={}'.format(result))
 
 
 @user.route('/register/view')
@@ -70,4 +70,8 @@ def register_view():
     result = request.query.get('result', '')
     result = unquote_plus(result)
 
-    return render_template('register.html', result=result)
+    return render_template(
+        'register.html',
+        result=result,
+        user=User.guest(),
+    )

@@ -163,10 +163,10 @@ var bindEventWeiboCommentDelete = function() {
         commentId = weiboCommentCell.dataset['id']
         apiWeiboCommentDelete(commentId, function(r) {
             log('apiWeiboCommentDelete', r.message)
-            weiboCommentCell.remove()
             weiboCell = self.closest('.weibo-cell')
+            weiboCommentCell.remove()
             weiboCommentCount = e('.weibo-comment-count', weiboCell)
-            var count = Number(weiboCommentCount.innerText) + 1
+            var count = Number(weiboCommentCount.innerText) - 1
             weiboCommentCount.innerText = count
             alert(r.message)
         })

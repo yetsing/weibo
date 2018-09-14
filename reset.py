@@ -1,42 +1,35 @@
+import random
+
 from models import Model
 from models.user import User
 from models.weibo import Weibo
 from models.comment import Comment
 from models.session import Session
+from fake_data import *
 
 
 def test_data():
     Model.create_all()
 
-    user_info = dict(
-        username='name',
-        password='123',
-    )
-    u, result = User.register(user_info)
+    for u in username:
+        form = dict(
+            username=u,
+            password='123',
+        )
+        User.register(form)
 
-    weibo = dict(
-        content='I was born intelligent - education ruined me. --Bernard Shaw '
-    )
-    w = Weibo.add(weibo, u.id)
+    for w in weibos:
+        form = dict(
+            content=w,
+        )
+        Weibo.add(form, random.randint(0, 2))
 
-    comment = dict(
-        content='good!',
-        weibo_id=w.id,
-    )
-    Comment.add(comment, u.id)
-
-    user_info = dict(
-        username='uuuu',
-        password='123',
-    )
-    u, result = User.register(user_info)
-
-    Comment.add(comment, u.id)
-
-    weibo = dict(
-        content='For you，a thousand times over.',
-    )
-    Weibo.add(weibo, u.id)
+    for c in comments:
+        form = dict(
+            content=c,
+            weibo_id=random.randint(0, 4),
+        )
+        Comment.add(form, random.randint(0, 2))
 
 
 if __name__ == '__main__':

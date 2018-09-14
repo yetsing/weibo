@@ -1,4 +1,4 @@
-*, :after, :before {
+.box, :after, :before {
     box-sizing: border-box;
 }
 

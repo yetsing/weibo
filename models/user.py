@@ -52,7 +52,7 @@ class User(Model):
         if valid:
             form['password'] = cls.salted_password(form['password'])
             u = User.new(form)
-            result = '注册成功'
+            result = '注册成功，您现在可以登录'
             return u, result
         else:
             result = '用户名或者密码长度必须大于2'
