@@ -25,7 +25,7 @@ def weibo_owner_required(route_function):
             weibo_id = request.query['id']
         else:
             weibo_id = request.json['id']
-        w = Weibo.find_by(id=int(weibo_id))
+        w = Weibo.one_for_id(id=int(weibo_id))
 
         if w.user_id == u.id:
             return route_function()
@@ -42,7 +42,8 @@ def weibo_owner_required(route_function):
 # 添加用户名
 def insert_username(data):
     user_id = data.pop('user_id')
-    u = User.find_by(id=user_id)
+    print('insert user_id', user_id)
+    u = User.one_for_id(id=user_id)
     data['username'] = u.username
 
 
@@ -89,10 +90,6 @@ def add():
 def delete():
     weibo_id = int(request.query['id'])
     Weibo.delete(weibo_id)
-    # 删除 weibo 对应的 comment
-    comments = Comment.find_all(weibo_id=weibo_id)
-    for c in comments:
-        Comment.delete(c.id)
 
     d = dict(
         message="成功删除 weibo"

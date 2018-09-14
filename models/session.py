@@ -1,13 +1,18 @@
 import time
 
-from models import Model
+from models import SQLModel
 from mou import log
 
 
-class Session(Model):
-    """
-    Session 是用来保存 session 的 model
-    """
+class Session(SQLModel):
+    sql_create = '''
+    CREATE TABLE `Session` (
+        `id` INT NOT NULL AUTO_INCREMENT,
+        `session_id` CHAR(36) NOT NULL,
+        `user_id` INT NOT NULL,
+        `expired_time` INT NOT NULL,
+        PRIMARY KEY (`id`)
+    )'''
 
     def __init__(self, form):
         super().__init__(form)

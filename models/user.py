@@ -1,13 +1,18 @@
-from models import Model
+from models import SQLModel
 from models.user_role import UserRole
 
 import hashlib
 
 
-class User(Model):
-    """
-    User 是一个保存用户数据的 model
-    """
+class User(SQLModel):
+    sql_create = '''
+    CREATE TABLE `User` (
+        `id` INT NOT NULL AUTO_INCREMENT,
+        `username` VARCHAR(45) NOT NULL,
+        `password` CHAR(64) NOT NULL,
+        `role` ENUM('guest', 'normal') NOT NULL,
+        PRIMARY KEY (`id`)
+    )'''
 
     def __init__(self, form):
         super().__init__(form)
@@ -19,6 +24,7 @@ class User(Model):
     def guest():
 
         form = dict(
+            id=-1,
             role=UserRole.guest,
             username='【游客】',
         )
@@ -38,7 +44,7 @@ class User(Model):
     @classmethod
     def login(cls, form):
         salted = cls.salted_password(form['password'])
-        u = User.find_by(username=form['username'], password=salted)
+        u = User.one_for_username_and_password(username=form['username'], password=salted)
         if u is not None:
             result = '登录成功'
             return u, result

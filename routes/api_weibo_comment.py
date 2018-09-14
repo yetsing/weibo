@@ -23,7 +23,7 @@ def comment_owner_required(route_function):
             comment_id = request.query['id']
         else:
             comment_id = request.json['id']
-        c = Comment.find_by(id=int(comment_id))
+        c = Comment.one(id=int(comment_id))
 
         if c.user_id == u.id:
             return route_function()
@@ -40,7 +40,7 @@ def comment_owner_required(route_function):
 # 添加用户名
 def insert_username(data):
     user_id = data.pop('user_id')
-    u = User.find_by(id=user_id)
+    u = User.one(id=user_id)
     data['username'] = u.username
 
 
@@ -48,7 +48,7 @@ def insert_username(data):
 def all():
     u = current_user()
     weibo_id = int(request.query.get('weibo_id'))
-    comments = Comment.find_all(weibo_id=weibo_id)
+    comments = Comment.all(weibo_id=weibo_id)
     data = [c.json() for c in comments]
     for d in data:
         # 添加用户名
@@ -88,6 +88,5 @@ def delete():
 @comment_owner_required
 def update():
     form = request.json
-    log('api weibo update form', form)
     t = Comment.update(**form)
     return make_json(t.json())

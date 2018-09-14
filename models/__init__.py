@@ -1,181 +1,279 @@
-import json
-import os
 import time
 
-from models.user_role import (
-    QinEncoder,
-    qin_decode,
-)
+import pymysql
 
-from mou import log
+import config
+import secret
 
 
-def save(data, path):
-    """
-    本函数把一个 dict 或者 list 写入文件
-    data 是 dict 或者 list
-    path 是保存文件的路径
-    """
-    s = json.dumps(data, indent=2, ensure_ascii=False, cls=QinEncoder)
-    with open(path, 'w+', encoding='utf-8') as f:
-        log('save', path, s, data)
-        f.write(s)
-
-
-def load(path):
-    """
-    本函数从一个文件中载入数据并转化为 dict 或者 list
-    path 是保存文件的路径
-    """
-    with open(path, 'r', encoding='utf-8') as f:
-        s = f.read()
-        log('load', s)
-        return json.loads(s, object_hook=qin_decode)
-
-
-def formatted_time(t):
+def formatted_time():
     time_format = '%Y-%m-%d'
-    localtime = time.localtime(t)
+    localtime = time.localtime(int(time.time()))
     formatted = time.strftime(time_format, localtime)
     return formatted
 
 
-class Model(object):
-    """
-    Model 是所有 model 的基类
-    """
+class SQLModel(object):
+    connection = None
+
+    @classmethod
+    def init_db(cls):
+        cls.connection = pymysql.connect(
+            host='localhost',
+            user='root',
+            password=secret.mysql_password,
+            db=config.db_name,
+            charset='utf8mb4',
+            cursorclass=pymysql.cursors.DictCursor
+        )
 
     def __init__(self, form):
         self.id = form.get('id', None)
-        # self.id = None
 
     @classmethod
-    def db_path(cls):
-        classname = cls.__name__
-        path = 'data/{}.txt'.format(classname)
-        return path
+    def table_name(cls):
+        name = cls.__name__.lower()
+        return '`{}`'.format(name)
 
     @classmethod
     def new(cls, form):
         m = cls(form)
-        m.save()
+        id = cls.insert(m.__dict__)
+        m.id = id
         return m
 
     @classmethod
-    def add(cls, form, user_id):
-        m = cls(form)
-        m.user_id = user_id
-        m.created_time = int(time.time())
-        m.updated_time = formatted_time(m.created_time)
-        m.save()
+    def insert(cls, form):
+        form.pop('id')
+        sql_keys = ', '.join(['`{}`'.format(k) for k in form.keys()])
+        sql_values = ', '.join(['%s'] * len(form))
+        sql_insert = 'INSERT INTO \n\t{} ({}) \nVALUES \n\t({})'.format(
+            cls.table_name(),
+            sql_keys,
+            sql_values,
+        )
+        print(sql_insert)
 
-        return m
+        values = tuple(form.values())
+
+        with cls.connection.cursor() as cursor:
+            cursor.execute(sql_insert, values)
+            _id = cursor.lastrowid
+        cls.connection.commit()
+
+        return _id
 
     @classmethod
     def delete(cls, id):
-        ms = cls.all()
-        for i, m in enumerate(ms):
-            if m.id == id:
-                del ms[i]
-                break
-        ns = [m.__dict__ for m in ms]
-        path = cls.db_path()
-        save(ns, path)
+        sql_delete = 'DELETE FROM {} WHERE `id`=%s'.format(cls.table_name())
+        print(sql_delete)
+
+        with cls.connection.cursor() as cursor:
+            cursor.execute(sql_delete, (id,))
+        cls.connection.commit()
 
     @classmethod
-    def update(cls, **kwargs):
-        id = int(kwargs['id'])
-        m = cls.find_by(id=id)
-        kwargs.pop('id')
+    def update(cls, id, **kwargs):
+        sql_set = ', '.join(
+            ['`{}`=%s'.format(k) for k in kwargs.keys()]
+        )
+        sql_update = 'UPDATE \n\t{} \nSET \n\t{} \nWHERE `id`=%s'.format(
+            cls.table_name(),
+            sql_set,
+        )
+        print(sql_update)
 
-        for k, v in kwargs.items():
-            if hasattr(m, k):
-                setattr(m, k, v)
+        values = list(kwargs.values())
+        values.append(id)
+        values = tuple(values)
 
-        m.updated_time = formatted_time(int(time.time()))
-
-        m.save()
-        return m
-
-    @classmethod
-    def all(cls):
-        path = cls.db_path()
-        models = load(path)
-        ms = [cls(m) for m in models]
-        return ms
+        with cls.connection.cursor() as cursor:
+            cursor.execute(sql_update, values)
+        cls.connection.commit()
 
     @classmethod
-    def find_by(cls, **kwargs):
-        log('find_by kwargs', kwargs)
+    def all(cls, **kwargs):
+        sql_select = 'SELECT * FROM \n\t{}'.format(cls.table_name())
 
-        for m in cls.all():
-            exist = True
-            for k, v in kwargs.items():
-                if not hasattr(m, k) or not getattr(m, k) == v:
-                    exist = False
-            if exist:
-                return m
+        if len(kwargs) > 0:
+            sql_where = ' AND '.join(
+                ['`{}`=%s'.format(k) for k in kwargs.keys()]
+            )
+            sql_where = '\nWHERE\n\t{}'.format(sql_where)
+            sql_select = '{}{}'.format(sql_select, sql_where)
+        print(sql_select)
+
+        values = tuple(kwargs.values())
+
+        ms = []
+        with cls.connection.cursor() as cursor:
+            cursor.execute(sql_select, values)
+            result = cursor.fetchall()
+            for row in result:
+                m = cls(row)
+                ms.append(m)
+            return ms
 
     @classmethod
-    def find_all(cls, **kwargs):
-        log('find_all kwargs', kwargs)
-        models = []
+    def one(cls, **kwargs):
+        sql_select = 'SELECT * FROM \n' \
+                     '\t{} \n' \
+                     '{}\n' \
+                     'LIMIT 1'
 
-        for m in cls.all():
-            exist = True
-            for k, v in kwargs.items():
-                if not hasattr(m, k) or not getattr(m, k) == v:
-                    exist = False
-            if exist:
-                models.append(m)
+        sql_where = ' AND '.join(
+            ['`{}`=%s'.format(k) for k in kwargs.keys()]
+        )
+        sql_where = '\nWHERE\n\t{}'.format(sql_where)
+        sql_select = sql_select.format(
+            cls.table_name(),
+            sql_where
+        )
 
-        return models
+        print(sql_select)
 
-    def save(self):
-        models = self.all()
-        log('models', models)
+        values = tuple(kwargs.values())
 
-        if self.id is None:
-            # 添加 id
-            if len(models) > 0:
-                log('不是第一个元素', models[-1].id)
-                self.id = models[-1].id + 1
+        with cls.connection.cursor() as cursor:
+            cursor.execute(sql_select, values)
+            result = cursor.fetchone()
+            if result is None:
+                return None
             else:
-                log('第一个元素')
-                self.id = 0
-            models.append(self)
-        else:
-            # 更新数据
-            for i, m in enumerate(models):
-                if m.id == self.id:
-                    models[i] = self
+                return cls(result)
 
-        ns = [m.__dict__ for m in models]
-        path = self.db_path()
-        save(ns, path)
+    @classmethod
+    def one_for_id(cls, id):
+        sql_select = 'SELECT * FROM \n' \
+                     '\t{} \n' \
+                     'WHERE id=%s \n' \
+                     'LIMIT 1'
+        sql_select = sql_select.format(
+            cls.table_name()
+        )
+
+        print(sql_select)
+
+        with cls.connection.cursor() as cursor:
+            cursor.execute(sql_select, (id,))
+            result = cursor.fetchone()
+            if result is None:
+                return None
+            else:
+                return cls(result)
+
+    @classmethod
+    def one_for_username_and_password(cls, username, password):
+        sql_select = 'SELECT * FROM \n' \
+                     '\t{} \n' \
+                     'WHERE \n\tusername=%s AND password=%s \n' \
+                     'LIMIT 1'
+        sql_select = sql_select.format(
+            cls.table_name()
+        )
+
+        print(sql_select)
+
+        with cls.connection.cursor() as cursor:
+            cursor.execute(sql_select, (username, password))
+            result = cursor.fetchone()
+            if result is None:
+                return None
+            else:
+                return cls(result)
 
     def __repr__(self):
-        classname = self.__class__.__name__
+        name = self.__class__.__name__
         properties = ['{}: ({})'.format(k, v) for k, v in self.__dict__.items()]
         s = '\n'.join(properties)
-        return '< {}\n{} >\n'.format(classname, s)
+        return '< {}\n{} >\n'.format(name, s)
 
     def json(self):
-        d = self.__dict__
-        return d
+        return self.__dict__
 
-    @classmethod
-    def all_json(cls):
-        ms = cls.all()
-        js = [t.json() for t in ms]
-        return js
 
-    @classmethod
-    def create_all(cls):
-        if not os.path.exists('data'):
-            os.mkdir('data')
-        subclasses = cls.__subclasses__()
-        for c in subclasses:
-            f = open(c.db_path(), 'w')
-            f.write('[]')
-            f.close()
+class SimpleUser(SQLModel):
+    sql_create = '''
+    CREATE TABLE `simpleuser` (
+        `id` INT NOT NULL AUTO_INCREMENT,
+        `username` VARCHAR(45) NOT NULL,
+        `password` CHAR(3) NOT NULL,
+        `email` VARCHAR(45) NOT NULL,
+        PRIMARY KEY (`id`)
+    )'''
+
+    def __init__(self, form):
+        super().__init__(form)
+        self.username = form['username']
+        self.password = form['password']
+        self.email = form['email']
+
+
+def recreate_database():
+    connection = pymysql.connect(
+        host='localhost',
+        user='root',
+        password=secret.mysql_password,
+        charset='utf8mb4',
+        cursorclass=pymysql.cursors.DictCursor
+    )
+
+    with connection.cursor() as cursor:
+        cursor.execute(
+            'DROP DATABASE IF EXISTS `{}`'.format(
+                config.db_name
+            )
+        )
+        cursor.execute(
+            'CREATE DATABASE `{}` DEFAULT CHARACTER SET utf8mb4'.format(
+                config.db_name
+            )
+        )
+        cursor.execute('USE `{}`'.format(config.db_name))
+        cursor.execute(SimpleUser.sql_create)
+
+    connection.commit()
+    connection.close()
+
+
+def test():
+    f = dict(
+        username='456',
+        password='789',
+        email='test',
+    )
+    u = SimpleUser.new(f)
+    print('User.new <{}>'.format(u))
+    assert u.username == '456'
+
+    us = SimpleUser.all()
+    print('User.all <{}>'.format(us))
+    assert len(us) >= 0
+
+    u = SimpleUser.one_for_username_and_password(username='456', password='789')
+    print('User.one <{}>'.format(u))
+    assert u.username == '456'
+
+    SimpleUser.update(u.id, username='456', email='789')
+    u = SimpleUser.one_for_username_and_password(username='456', password='789')
+    print('User.one <{}>'.format(u))
+    assert u.username == '456'
+
+    us = SimpleUser.all(username='456')
+    print('User.all <{}>'.format(us))
+    assert len(us) >= 0
+
+    u = SimpleUser.one(username='456')
+    print('User.one <{}>'.format(u))
+    assert u.username == '456'
+
+    SimpleUser.delete(u.id)
+    print('after delete', SimpleUser.all())
+    u = SimpleUser.one_for_username_and_password(username='456', password='123')
+    print('User.one <{}>'.format(u))
+    assert u is None
+
+
+if __name__ == '__main__':
+    recreate_database()
+    test()
