@@ -61,7 +61,7 @@ var insertWeiboCommentList = function(weiboCommentList, weiboCell) {
     var weiboComments = `
     <div class="weibo-comment-list">
         ${weiboCommentList}
-        <div class="weibo-comment-add-form pure-form">
+        <div class="weibo-comment-add-form pure-form" style="margin: 10px;">
             <input class="weibo-comment-input" placeholder="写下你的评论..." style="width: 80%; height: 30px;">
             <button class="weibo-comment-add pure-button pure-button-primary">评论</button>
         </div>
@@ -136,6 +136,9 @@ var bindEventWeiboCommentAdd = function() {
             // 收到返回的数据, 插入到页面中
             insertWeiboComment(comment, comment.username, weiboCommentList)
             input.value = ''
+            weiboCommentCount = e('.weibo-comment-count', weiboCell)
+            var count = Number(weiboCommentCount.innerText) + 1
+            weiboCommentCount.innerText = count
         })
     } else {
         log('点到了 weibo cell')
@@ -161,6 +164,10 @@ var bindEventWeiboCommentDelete = function() {
         apiWeiboCommentDelete(commentId, function(r) {
             log('apiWeiboCommentDelete', r.message)
             weiboCommentCell.remove()
+            weiboCell = self.closest('.weibo-cell')
+            weiboCommentCount = e('.weibo-comment-count', weiboCell)
+            var count = Number(weiboCommentCount.innerText) + 1
+            weiboCommentCount.innerText = count
             alert(r.message)
         })
     } else {

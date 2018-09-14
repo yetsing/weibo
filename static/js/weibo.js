@@ -47,7 +47,10 @@ var weiboTemplate = function(weibo, username) {
                 <p class="weibo-content">${weibo.content}</p>
             </div>
             <div>
-                <a href="javascript:void(0);" class="weibo-comment-all">${weibo.comment_count} 条评论</a>
+                <a href="javascript:void(0);" class="weibo-comment-all">
+                    <span class="weibo-comment-count">${weibo.comment_count}</span>
+                    条评论
+                </a>
                 <span class="weibo-updated-time">编辑于 ${weibo.updated_time}</span>
             </div>
         </section>
