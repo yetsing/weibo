@@ -33,6 +33,13 @@ def load(path):
         return json.loads(s, object_hook=qin_decode)
 
 
+def formatted_time(t):
+    time_format = '%Y-%m-%d'
+    localtime = time.localtime(t)
+    formatted = time.strftime(time_format, localtime)
+    return formatted
+
+
 class Model(object):
     """
     Model 是所有 model 的基类
@@ -59,7 +66,7 @@ class Model(object):
         m = cls(form)
         m.user_id = user_id
         m.created_time = int(time.time())
-        m.updated_time = m.created_time
+        m.updated_time = formatted_time(m.created_time)
         m.save()
 
         return m
@@ -85,7 +92,7 @@ class Model(object):
             if hasattr(m, k):
                 setattr(m, k, v)
 
-        m.updated_time = int(time.time())
+        m.updated_time = formatted_time(int(time.time()))
 
         m.save()
         return m

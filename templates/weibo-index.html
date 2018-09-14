@@ -19,11 +19,11 @@
 
 <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
     <div class="width-limit">
-        {% if user %}
-        <a class="btn box" id="profile" href="/register/view">我的</a>
-        {% else %}
+        {% if user.username == '【游客】' %}
         <a class="btn box" id="sign_up" href="/register/view">注册</a>
         <a class="btn box" id="sign_in" href="/login/view">登录</a>
+        {% else %}
+        <a class="btn box" id="profile" href="/register/view">我的</a>
         {% endif %}
         <a class="btn box" id="index" href="/weibo/index">主页</a>
     </div>

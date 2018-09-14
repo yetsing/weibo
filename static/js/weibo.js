@@ -21,6 +21,7 @@ var apiWeiboUpdate = function(form, callback) {
 }
 
 var weiboTemplate = function(weibo, username) {
+    var created_time = fromNow(weibo.created_time)
     var button = ''
     if (username == weibo.username) {
         var button = `
@@ -28,22 +29,27 @@ var weiboTemplate = function(weibo, username) {
         <a href="javascript:void(0);" class="weibo-edit" style="font-size: smaller">编辑</a>
         `
     }
+
     var t = `
         <section class="post weibo-cell" data-id="${weibo.id}">
             <header class="post-header">
                 <img width="48" height="48" alt="${weibo.username}" class="post-avatar" src="/static/images/default.jpg">
                 <p class="post-meta">
-                    By <a href="javascript:void(0);" class="post-author" style="font-weight: bolder;">${weibo.username}</a>
-                    created at
-                    <a href="javascript:void(0);" style="color: #8590a6;">${weibo.created_time}</a>
+                    <a href="javascript:void(0);" class="post-author" style="font-size: large; font-weight: bolder;">${weibo.username}</a>
+                     · 创建于
+                    <a href="javascript:void(0);" style="color: #8590a6;">
+                        ${created_time}
+                    </a>
                     ${button}
                 </p>
             </header>
             <div class="post-description">
                 <p class="weibo-content">${weibo.content}</p>
             </div>
-            <a href="javascript:void(0);" class="weibo-comment-all">${weibo.comment_count} 条评论</a>
-            <span class="weibo-updated-time">updated at ${weibo.updated_time}</span>
+            <div>
+                <a href="javascript:void(0);" class="weibo-comment-all">${weibo.comment_count} 条评论</a>
+                <span class="weibo-updated-time">编辑于 ${weibo.updated_time}</span>
+            </div>
         </section>
         <h1 class="content-subhead update-form"> </h1>
     `
@@ -146,11 +152,12 @@ var bindEventWeiboEdit = function() {
         self.classList.add('active')
         weiboCell = self.closest('.weibo-cell')
         weiboId = weiboCell.dataset['id']
+        postDescription = e('.post-description', weiboCell)
         // weiboCommentList = e('.weibo-comment-list', weiboCell)
         var weiboSpan = e('.weibo-content', weiboCell)
         var content = weiboSpan.innerText
         // 插入编辑输入框
-        insertUpdateForm(content, weiboCell)
+        insertUpdateForm(content, postDescription)
     } else {
         log('点到了 weibo cell')
     }

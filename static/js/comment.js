@@ -19,10 +19,11 @@ var apiWeiboCommentUpdate = function(form, callback) {
 }
 
 var commentTemplate = function(comment, username) {
+    created_time = fromNow(comment.created_time)
     var button = ''
     if (username == comment.username) {
         var button = `
-        <a href="javascript:void(0);" class="weibo-comment-delete post-category post-category-pure" style="font-size: smaller">删除</a>
+        <a href="javascript:void(0);" class="weibo-comment-delete" style="font-size: xx-small">删除</a>
         `
     }
     var t = `
@@ -30,13 +31,13 @@ var commentTemplate = function(comment, username) {
             <div style="margin-left: 12px; margin-bottom: 10px;">
                 <span style="color: rgb(61, 146, 201); font-weight: bolder;">${comment.username}</span>
                 ${button}
-                <span style="float: right; color: #8590a6;">${comment.updated_time}</span>
+                <span style="float: right; color: #8590a6; margin-right: 10px;">${created_time}</span>
             </div>
             <div style="margin-left: 12px;">
                 ${comment.content}
             </div>
+            <h1 class="content-subhead update-form"> </h1>
         </div>
-        <h1 class="content-subhead update-form"> </h1>
     `
     return t
 }
@@ -61,8 +62,8 @@ var insertWeiboCommentList = function(weiboCommentList, weiboCell) {
     <div class="weibo-comment-list">
         ${weiboCommentList}
         <div class="weibo-comment-add-form pure-form">
-            <input class="weibo-comment-input" placeholder="写下你的评论..." style="margin-left: 10px; width: 80%; height: 30px;">
-            <button class="weibo-comment-add pure-button pure-button-primary" style="height: 30px">评论</button>
+            <input class="weibo-comment-input" placeholder="写下你的评论..." style="width: 80%; height: 30px;">
+            <button class="weibo-comment-add pure-button pure-button-primary">评论</button>
         </div>
     </div>
     `
@@ -81,8 +82,14 @@ var bindEventWeiboCommentAll = function() {
         var self = event.target
         log('被点击的元素', self)
         log(self.classList)
-        if (self.classList.contains('weibo-comment-all')) {
+        if (self.classList.contains('active')) {
+            self.classList.remove('active')
+            var weiboCell = self.closest('.weibo-cell')
+            var weiboCommentList = e('.weibo-comment-list')
+            weiboCommentList.remove()
+        } else if (self.classList.contains('weibo-comment-all')) {
             log('显示该 weibo 的所有评论')
+            self.classList.add('active')
             var weiboCell = self.closest('.weibo-cell')
             var weiboId = weiboCell.dataset['id']
             apiWeiboCommentAll(weiboId, function(comments) {
@@ -153,8 +160,7 @@ var bindEventWeiboCommentDelete = function() {
         commentId = weiboCommentCell.dataset['id']
         apiWeiboCommentDelete(commentId, function(r) {
             log('apiWeiboCommentDelete', r.message)
-            // 删除 self 的父节点
-            self.parentElement.remove()
+            weiboCommentCell.remove()
             alert(r.message)
         })
     } else {
