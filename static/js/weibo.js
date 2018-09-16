@@ -116,96 +116,99 @@ var bindEventWeiboDelete = function() {
     var weiboList = e('#id-weibo-list')
     // 事件响应函数会传入一个参数 就是事件本身
     weiboList.addEventListener('click', function(event) {
-    log(event)
-    // 我们可以通过 event.target 来得到被点击的对象
-    var self = event.target
-    log('被点击的元素', self)
-    // 通过比较被点击元素的 class
-    // 来判断元素是否是我们想要的
-    // classList 属性保存了元素所有的 class
-    log(self.classList)
-    if (self.classList.contains('weibo-delete')) {
-        log('点到了删除按钮')
-        weiboCell = self.closest('.weibo-cell')
-        weiboId = weiboCell.dataset['id']
-        apiWeiboDelete(weiboId, function(r) {
-            log('apiWeiboDelete', r.message)
-            weiboCell.remove()
-            alert(r.message)
-        })
-    } else {
-        log('点到了 weibo cell')
-    }
-})}
+        log(event)
+        // 我们可以通过 event.target 来得到被点击的对象
+        var self = event.target
+        log('被点击的元素', self)
+        // 通过比较被点击元素的 class
+        // 来判断元素是否是我们想要的
+        // classList 属性保存了元素所有的 class
+        log(self.classList)
+        if (self.classList.contains('weibo-delete')) {
+            log('点到了删除按钮')
+            weiboCell = self.closest('.weibo-cell')
+            weiboId = weiboCell.dataset['id']
+            apiWeiboDelete(weiboId, function(r) {
+                log('apiWeiboDelete', r.message)
+                weiboCell.remove()
+                alert(r.message)
+            })
+        } else {
+            log('点到了 weibo cell')
+        }
+    })
+}
 
 var bindEventWeiboEdit = function() {
     var weiboList = e('#id-weibo-list')
     // 事件响应函数会传入一个参数 就是事件本身
     weiboList.addEventListener('click', function(event) {
-    log(event)
-    // 我们可以通过 event.target 来得到被点击的对象
-    var self = event.target
-    log('被点击的元素', self)
-    // 通过比较被点击元素的 class
-    // 来判断元素是否是我们想要的
-    // classList 属性保存了元素所有的 class
-    log(self.classList, typeof(self.classList))
-    if (self.classList.contains('weibo-edit') && (!self.classList.contains('active'))) {
-        log('点到了编辑按钮')
-        self.classList.add('active')
-        weiboCell = self.closest('.weibo-cell')
-        weiboId = weiboCell.dataset['id']
-        postDescription = e('.post-description', weiboCell)
-        // weiboCommentList = e('.weibo-comment-list', weiboCell)
-        var weiboSpan = e('.weibo-content', weiboCell)
-        var content = weiboSpan.innerText
-        // 插入编辑输入框
-        insertUpdateForm(content, postDescription)
-    } else {
-        log('点到了 weibo cell')
-    }
-})}
+        log(event)
+        // 我们可以通过 event.target 来得到被点击的对象
+        var self = event.target
+        log('被点击的元素', self)
+        // 通过比较被点击元素的 class
+        // 来判断元素是否是我们想要的
+        // classList 属性保存了元素所有的 class
+        log(self.classList, typeof(self.classList))
+        if (self.classList.contains('weibo-edit') && (!self.classList.contains('active'))) {
+            log('点到了编辑按钮')
+            self.classList.add('active')
+            weiboCell = self.closest('.weibo-cell')
+            weiboId = weiboCell.dataset['id']
+            postDescription = e('.post-description', weiboCell)
+            // weiboCommentList = e('.weibo-comment-list', weiboCell)
+            var weiboSpan = e('.weibo-content', weiboCell)
+            var content = weiboSpan.innerText
+            // 插入编辑输入框
+            insertUpdateForm(content, postDescription)
+        } else {
+            log('点到了 weibo cell')
+        }
+    })
+}
 
 var bindEventWeiboUpdate = function() {
     var weiboList = e('#id-weibo-list')
     // 事件响应函数会传入一个参数 就是事件本身
     weiboList.addEventListener('click', function(event) {
-    log(event)
-    // 我们可以通过 event.target 来得到被点击的对象
-    var self = event.target
-    log('被点击的元素', self)
-    // 通过比较被点击元素的 class
-    // 来判断元素是否是我们想要的
-    // classList 属性保存了元素所有的 class
-    log(self.classList)
-    if (self.classList.contains('weibo-update')) {
-        log('点到了更新按钮')
-        weiboCell = self.closest('.weibo-cell')
-        weiboId = weiboCell.dataset['id']
-        log('update weibo id', weiboId)
-        input = e('.weibo-update-input', weiboCell)
-        content = input.value
-        var form = {
-            id: weiboId,
-            content: content,
+        log(event)
+        // 我们可以通过 event.target 来得到被点击的对象
+        var self = event.target
+        log('被点击的元素', self)
+        // 通过比较被点击元素的 class
+        // 来判断元素是否是我们想要的
+        // classList 属性保存了元素所有的 class
+        log(self.classList)
+        if (self.classList.contains('weibo-update')) {
+            log('点到了更新按钮')
+            weiboCell = self.closest('.weibo-cell')
+            weiboId = weiboCell.dataset['id']
+            log('update weibo id', weiboId)
+            input = e('.weibo-update-input', weiboCell)
+            content = input.value
+            var form = {
+                id: weiboId,
+                content: content,
+            }
+
+            apiWeiboUpdate(form, function(weibo) {
+                // 收到返回的数据, 插入到页面中
+                log('apiWeiboUpdate', weibo)
+
+                var weiboSpan = e('.weibo-content', weiboCell)
+                weiboSpan.innerText = weibo.content
+
+                var updateForm = e('.weibo-update-form', weiboCell)
+                updateForm.remove()
+                editButton = e('.weibo-edit', weiboCell)
+                editButton.classList.remove('active')
+            })
+        } else {
+            log('点到了 weibo cell')
         }
-
-        apiWeiboUpdate(form, function(weibo) {
-            // 收到返回的数据, 插入到页面中
-            log('apiWeiboUpdate', weibo)
-
-            var weiboSpan = e('.weibo-content', weiboCell)
-            weiboSpan.innerText = weibo.content
-
-            var updateForm = e('.weibo-update-form', weiboCell)
-            updateForm.remove()
-            editButton = e('.weibo-edit', weiboCell)
-            editButton.classList.remove('active')
-        })
-    } else {
-        log('点到了 weibo cell')
-    }
-})}
+    })
+}
 
 
 var bindEvents = function() {
