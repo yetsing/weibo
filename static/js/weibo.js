@@ -10,8 +10,8 @@ var apiWeiboAdd = function(form, callback) {
     ajax('POST', path, form, callback)
 }
 
-var apiWeiboDelete = function(weibo_id, callback) {
-    var path = `/weibo/delete?id=${weibo_id}`
+var apiWeiboDelete = function(weiboId, callback) {
+    var path = `/weibo/delete?id=${weiboId}`
     ajax('GET', path, '', callback)
 }
 
@@ -96,7 +96,7 @@ var loadWeibos = function() {
 var bindEventWeiboAdd = function() {
     var b = e('#id-button-add')
     // 注意, 第二个参数可以直接给出定义函数
-    b.addEventListener('click', function(){
+    b.addEventListener('click', function() {
         var input = e('#id-input-weibo')
         var content = input.value
         log('click add', content)
