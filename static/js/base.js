@@ -12,7 +12,6 @@ var ajax = function(method, path, data, responseCallback) {
     // 设置请求方法和请求地址
     r.open(method, path, true)
     // 设置发送的数据的格式为 application/json
-    // 这个不是必须的
     r.setRequestHeader('Content-Type', 'application/json')
     // 注册响应函数
     r.onreadystatechange = function() {
