@@ -42,7 +42,6 @@ def weibo_owner_required(route_function):
 # 添加用户名
 def insert_username(data):
     user_id = data.pop('user_id')
-    print('insert user_id', user_id)
     u = User.one_for_id(id=user_id)
     data['username'] = u.username
 
@@ -104,7 +103,9 @@ def update():
     """
     用于增加新 weibo 的路由函数
     """
+    u = current_user()
     form = request.json
+    form['user_id'] = u.id
     log('api weibo update form', form)
     t = Weibo.update(**form)
     return make_json(t.json())

@@ -39,7 +39,6 @@ def receive_request(connection):
     while True:
         r = connection.recv(buffer_size)
         req += r
-        print('buffer_size: ', r)
         # 取到的数据长度不够 buffer_size 的时候，说明数据已经取完了。
         if len(r) < buffer_size:
             req = req.decode()

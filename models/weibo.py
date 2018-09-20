@@ -46,7 +46,7 @@ class Weibo(SQLModel):
     @classmethod
     def delete(cls, weibo_id):
         # 删除 weibo 对应的 comment
-        comments = Comment.one(weibo_id=weibo_id)
+        comments = Comment.all(weibo_id=weibo_id)
         for c in comments:
             Comment.delete(c.id)
         super().delete(weibo_id)
@@ -56,3 +56,5 @@ class Weibo(SQLModel):
         kwargs['created_time'] = int(time.time())
         kwargs['updated_time'] = formatted_time()
         super().update(id, **kwargs)
+        w = cls.new(kwargs)
+        return w

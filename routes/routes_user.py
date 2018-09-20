@@ -67,11 +67,12 @@ def register():
 
 @user.route('/register/view')
 def register_view():
+    u = current_user()
     result = request.query.get('result', '')
     result = unquote_plus(result)
 
     return render_template(
         'register.html',
         result=result,
-        user=User.guest(),
+        user=u,
     )

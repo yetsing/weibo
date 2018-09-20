@@ -52,7 +52,6 @@ class SQLModel(object):
             sql_keys,
             sql_values,
         )
-        print(sql_insert)
 
         values = tuple(form.values())
 
@@ -66,7 +65,6 @@ class SQLModel(object):
     @classmethod
     def delete(cls, id):
         sql_delete = 'DELETE FROM {} WHERE `id`=%s'.format(cls.table_name())
-        print(sql_delete)
 
         with cls.connection.cursor() as cursor:
             cursor.execute(sql_delete, (id,))
@@ -81,7 +79,6 @@ class SQLModel(object):
             cls.table_name(),
             sql_set,
         )
-        print(sql_update)
 
         values = list(kwargs.values())
         values.append(id)
@@ -101,7 +98,6 @@ class SQLModel(object):
             )
             sql_where = '\nWHERE\n\t{}'.format(sql_where)
             sql_select = '{}{}'.format(sql_select, sql_where)
-        print(sql_select)
 
         values = tuple(kwargs.values())
 
@@ -130,7 +126,6 @@ class SQLModel(object):
             sql_where
         )
 
-        print(sql_select)
 
         values = tuple(kwargs.values())
 
@@ -152,7 +147,6 @@ class SQLModel(object):
             cls.table_name()
         )
 
-        print(sql_select)
 
         with cls.connection.cursor() as cursor:
             cursor.execute(sql_select, (id,))
@@ -172,7 +166,6 @@ class SQLModel(object):
             cls.table_name()
         )
 
-        print(sql_select)
 
         with cls.connection.cursor() as cursor:
             cursor.execute(sql_select, (username, password))
