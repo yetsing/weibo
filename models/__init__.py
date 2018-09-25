@@ -31,8 +31,15 @@ class SQLModel(object):
         self.id = form.get('id', None)
 
     @classmethod
+    def restart_connect(cls):
+        try:
+            cls.connection.ping()
+        except:
+            cls.connection()
+
+    @classmethod
     def table_name(cls):
-        name = cls.__name__.lower()
+        name = cls.__name__.capitalize()
         return '`{}`'.format(name)
 
     @classmethod
@@ -55,6 +62,7 @@ class SQLModel(object):
 
         values = tuple(form.values())
 
+        cls.restart_connect()
         with cls.connection.cursor() as cursor:
             cursor.execute(sql_insert, values)
             _id = cursor.lastrowid
@@ -66,6 +74,7 @@ class SQLModel(object):
     def delete(cls, id):
         sql_delete = 'DELETE FROM {} WHERE `id`=%s'.format(cls.table_name())
 
+        cls.restart_connect()
         with cls.connection.cursor() as cursor:
             cursor.execute(sql_delete, (id,))
         cls.connection.commit()
@@ -84,6 +93,7 @@ class SQLModel(object):
         values.append(id)
         values = tuple(values)
 
+        cls.restart_connect()
         with cls.connection.cursor() as cursor:
             cursor.execute(sql_update, values)
         cls.connection.commit()
@@ -102,6 +112,7 @@ class SQLModel(object):
         values = tuple(kwargs.values())
 
         ms = []
+        cls.restart_connect()
         with cls.connection.cursor() as cursor:
             cursor.execute(sql_select, values)
             result = cursor.fetchall()
@@ -126,9 +137,9 @@ class SQLModel(object):
             sql_where
         )
 
-
         values = tuple(kwargs.values())
 
+        cls.restart_connect()
         with cls.connection.cursor() as cursor:
             cursor.execute(sql_select, values)
             result = cursor.fetchone()
@@ -147,7 +158,7 @@ class SQLModel(object):
             cls.table_name()
         )
 
-
+        cls.restart_connect()
         with cls.connection.cursor() as cursor:
             cursor.execute(sql_select, (id,))
             result = cursor.fetchone()
@@ -166,7 +177,7 @@ class SQLModel(object):
             cls.table_name()
         )
 
-
+        cls.restart_connect()
         with cls.connection.cursor() as cursor:
             cursor.execute(sql_select, (username, password))
             result = cursor.fetchone()
