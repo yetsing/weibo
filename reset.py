@@ -46,7 +46,7 @@ def recreate_database():
     connection.close()
 
 
-def test_data():
+def insert_test_data():
     SQLModel.init_db()
 
     for u in username:
@@ -72,4 +72,4 @@ def test_data():
 
 if __name__ == '__main__':
     recreate_database()
-    test_data()
+    insert_test_data()

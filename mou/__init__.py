@@ -9,7 +9,7 @@ from .helper import (
     MouTemplate,
     make_response,
 )
-from .utils import log
 from .run import run, request
 
 render_template = MouTemplate.render
+register_filter = MouTemplate.register_filter

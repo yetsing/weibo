@@ -1,40 +1,20 @@
 from mou import (
     Mou,
-    log,
     request,
     make_json,
 )
 
 from routes import (
+    current_user,
+    owner_required,
     ajax_login_required,
-    current_user
 )
+
 from models.comment import Comment
 from models.user import User
+from utils import log
 
 comment = Mou('comment')
-
-
-def comment_owner_required(route_function):
-    def f():
-        log('same_user_required')
-        u = current_user()
-        if 'id' in request.query:
-            comment_id = request.query['id']
-        else:
-            comment_id = request.json['id']
-        c = Comment.one(id=int(comment_id))
-
-        if c.user_id == u.id:
-            return route_function()
-        else:
-            d = dict(
-                done="false",
-                message="权限不足"
-            )
-            return make_json(d)
-
-    return f
 
 
 # 添加用户名
@@ -48,7 +28,7 @@ def insert_username(data):
 def all():
     u = current_user()
     weibo_id = int(request.query.get('weibo_id'))
-    comments = Comment.all(weibo_id=weibo_id)
+    comments = Comment.all(weibo_id=weibo_id, sort_by='created_time')
     data = [c.json() for c in comments]
     for d in data:
         # 添加用户名
@@ -73,7 +53,7 @@ def add():
 
 @comment.route('/delete')
 @ajax_login_required
-@comment_owner_required
+@owner_required(Comment)
 def delete():
     comment_id = int(request.query['id'])
     Comment.delete(comment_id)
@@ -85,7 +65,7 @@ def delete():
 
 @comment.route('/update')
 @ajax_login_required
-@comment_owner_required
+@owner_required(Comment)
 def update():
     form = request.json
     t = Comment.update(**form)

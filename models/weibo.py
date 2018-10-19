@@ -1,6 +1,6 @@
 import time
 
-from models import SQLModel, formatted_time
+from models import SQLModel
 from models.comment import Comment
 
 
@@ -11,7 +11,7 @@ class Weibo(SQLModel):
         `content` Text NOT NULL,
         `user_id` INT NOT NULL,
         `created_time` INT NOT NULL,
-        `updated_time` CHAR(10) NOT NULL,
+        `updated_time` INT NOT NULL,
         `comment_count` INT NULL,
         PRIMARY KEY (`id`)
     )'''
@@ -31,7 +31,7 @@ class Weibo(SQLModel):
 
     @staticmethod
     def all_json():
-        weibos = Weibo.all()
+        weibos = Weibo.all(desc=False)
         ws = [w.__dict__ for w in weibos]
         return ws
 
@@ -39,7 +39,7 @@ class Weibo(SQLModel):
     def add(cls, form, user_id):
         form['user_id'] = user_id
         form['created_time'] = int(time.time())
-        form['updated_time'] = formatted_time()
+        form['updated_time'] = int(time.time())
         weibo = cls.new(form)
         return weibo
 
@@ -53,8 +53,7 @@ class Weibo(SQLModel):
 
     @classmethod
     def update(cls, id, **kwargs):
-        kwargs['created_time'] = int(time.time())
-        kwargs['updated_time'] = formatted_time()
+        kwargs['updated_time'] = int(time.time())
         super().update(id, **kwargs)
-        w = cls.new(kwargs)
+        w = cls(kwargs)
         return w

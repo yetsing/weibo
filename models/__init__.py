@@ -4,13 +4,7 @@ import pymysql
 
 import config
 import secret
-
-
-def formatted_time():
-    time_format = '%Y-%m-%d'
-    localtime = time.localtime(int(time.time()))
-    formatted = time.strftime(time_format, localtime)
-    return formatted
+from utils import log
 
 
 class SQLModel(object):
@@ -99,7 +93,7 @@ class SQLModel(object):
         cls.connection.commit()
 
     @classmethod
-    def all(cls, **kwargs):
+    def all(cls, sort_by='updated_time', desc=True, **kwargs):
         sql_select = 'SELECT * FROM \n\t{}'.format(cls.table_name())
 
         if len(kwargs) > 0:
@@ -108,6 +102,10 @@ class SQLModel(object):
             )
             sql_where = '\nWHERE\n\t{}'.format(sql_where)
             sql_select = '{}{}'.format(sql_select, sql_where)
+
+        sql_select = '{}\nORDER BY\n\t{}'.format(sql_select, sort_by)
+        if desc:
+            sql_select += ' DESC'
 
         values = tuple(kwargs.values())
 

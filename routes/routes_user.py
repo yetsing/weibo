@@ -11,7 +11,7 @@ from mou import (
 from models.session import Session
 from routes import current_user
 
-from mou import log
+from utils import log
 from models.user import User
 
 user = Mou('user')

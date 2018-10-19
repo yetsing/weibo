@@ -1,4 +1,4 @@
-var log = console.log.bind(console)
+var log = function() {}
 
 var e = function(selector, parent=document) {
     return parent.querySelector(selector)
@@ -19,7 +19,7 @@ var ajax = function(method, path, data, responseCallback) {
             // r.response 存的就是服务器发过来的放在 HTTP BODY 中的数据
             log('load ajax response', r.response, typeof(r.response))
             var json = JSON.parse(r.response)
-            if (json.done == 'false') {
+            if (json.status == 'fail') {
                 alert(json.message)
             } else {
                 responseCallback(json)
@@ -56,3 +56,15 @@ var fromNow = function(time) {
         return `${year} 年前`
     }
 }
+
+var formatUnixTimestamp = function(UnixTimestamp) {
+        var dateTimestamp = new Date(UnixTimestamp * 1000)
+        var year = 1900 + dateTimestamp.getYear()
+        var month = "0" + (dateTimestamp.getMonth() + 1)
+        month = month.substring(month.length-2, month.length)
+        var day = "0" + dateTimestamp.getDate()
+        day = day.substring(day.length-2, day.length)
+        var formatted = year + '-' + month + '-' + day
+        return formatted
+}
+

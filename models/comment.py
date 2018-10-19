@@ -1,6 +1,6 @@
 import time
 
-from models import SQLModel, formatted_time
+from models import SQLModel
 from models.user import User
 
 
@@ -12,7 +12,7 @@ class Comment(SQLModel):
         `user_id` INT NOT NULL,
         `weibo_id` INT NOT NULL,
         `created_time` INT NOT NULL,
-        `updated_time` CHAR(10) NOT NULL,
+        `updated_time` INT NOT NULL,
         PRIMARY KEY (`id`)
     )'''
 
@@ -32,6 +32,6 @@ class Comment(SQLModel):
     def add(cls, form, user_id):
         form['user_id'] = user_id
         form['created_time'] = int(time.time())
-        form['updated_time'] = formatted_time()
+        form['updated_time'] = int(time.time())
         comment = cls.new(form)
         return comment

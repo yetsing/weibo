@@ -1,7 +1,7 @@
 import time
 
 from models import SQLModel
-from mou import log
+from utils import log
 
 
 class Session(SQLModel):

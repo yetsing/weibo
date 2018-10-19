@@ -22,6 +22,7 @@ var apiWeiboUpdate = function(form, callback) {
 
 var weiboTemplate = function(weibo, username) {
     var created_time = fromNow(weibo.created_time)
+    var updated_time = formatUnixTimestamp(weibo.updated_time)
     var button = ''
     if (username == weibo.username) {
         var button = `
@@ -51,7 +52,9 @@ var weiboTemplate = function(weibo, username) {
                     <span class="weibo-comment-count">${weibo.comment_count}</span>
                     条评论
                 </a>
-                <span class="weibo-updated-time">编辑于 ${weibo.updated_time}</span>
+                <span class="weibo-time">编辑于
+                    <span class="weibo-updated-time">${updated_time}</span>
+                </span>
             </div>
         </section>
         <h1 id="id-line-${weibo.id}" class="content-subhead update-form"> </h1>
@@ -198,6 +201,8 @@ var bindEventWeiboUpdate = function() {
 
                 var weiboSpan = e('.weibo-content', weiboCell)
                 weiboSpan.innerText = weibo.content
+                var weiboUpdatedTime = e('.weibo-updated-time', weiboCell)
+                weiboUpdatedTime.innerText = formatUnixTimestamp(weibo.updated_time)
 
                 var updateForm = e('.weibo-update-form', weiboCell)
                 updateForm.remove()

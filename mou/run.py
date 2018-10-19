@@ -1,9 +1,7 @@
 import _thread
 import socket
-import threading
-import traceback
 
-from .utils import log
+from utils import log
 from .requset import Request
 from .helper import *
 from .static import static
@@ -58,7 +56,6 @@ def process_request(connection):
             response = dispatch_request()
         except:
             log('Internal Server Error')
-            traceback.print_exc()
             response = error(500)
         log("response log:\n <{}>".format(response))
         # 把响应发送给客户端

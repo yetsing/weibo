@@ -28,6 +28,10 @@ class MouTemplate:
         # 可以传递参数
         return template.render(*args, **kwargs)
 
+    @classmethod
+    def register_filter(cls, filter):
+        cls.e.filters[filter.__name__] = filter
+
 
 def error(status_code=404):
     """

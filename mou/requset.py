@@ -1,7 +1,7 @@
 import urllib.parse
 import threading
 
-from .utils import log
+from utils import log
 import json
 
 
@@ -38,8 +38,10 @@ class Request(threading.local):
 
         if 'Cookie' in self.headers:
             cookies = self.headers['Cookie']
-            k, v = cookies.split('=')
-            self.cookies[k] = v
+            args = cookies.split('; ')
+            for arg in args:
+                k, v = arg.split('=')
+                self.cookies[k] = v
 
     @property
     def form(self):

@@ -1,6 +1,5 @@
 from mou import (
     Mou,
-    log,
     request,
     make_json,
     render_template,
@@ -8,35 +7,15 @@ from mou import (
 
 from routes import (
     current_user,
+    owner_required,
     ajax_login_required,
 )
-from models.comment import Comment
+
 from models.weibo import Weibo
 from models.user import User
+from utils import log
 
 weibo = Mou('weibo')
-
-
-def weibo_owner_required(route_function):
-    def f():
-        log('same_user_required')
-        u = current_user()
-        if 'id' in request.query:
-            weibo_id = request.query['id']
-        else:
-            weibo_id = request.json['id']
-        w = Weibo.one_for_id(id=int(weibo_id))
-
-        if w.user_id == u.id:
-            return route_function()
-        else:
-            d = dict(
-                done="false",
-                message="权限不足"
-            )
-            return make_json(d)
-
-    return f
 
 
 # 添加用户名
@@ -85,7 +64,7 @@ def add():
 
 @weibo.route('/delete')
 @ajax_login_required
-@weibo_owner_required
+@owner_required(Weibo)
 def delete():
     weibo_id = int(request.query['id'])
     Weibo.delete(weibo_id)
@@ -98,11 +77,8 @@ def delete():
 
 @weibo.route('/update')
 @ajax_login_required
-@weibo_owner_required
+@owner_required(Weibo)
 def update():
-    """
-    用于增加新 weibo 的路由函数
-    """
     u = current_user()
     form = request.json
     form['user_id'] = u.id
