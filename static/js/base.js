@@ -67,4 +67,3 @@ var formatUnixTimestamp = function(UnixTimestamp) {
         var formatted = year + '-' + month + '-' + day
         return formatted
 }
-

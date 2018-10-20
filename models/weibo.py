@@ -23,7 +23,7 @@ class Weibo(SQLModel):
         self.user_id = form.get('user_id', None)
         self.created_time = form.get('created_time', -1)
         self.updated_time = form.get('updated_time', -1)
-        self.comment_count = len(self.comments())
+        self.comment_count = Comment.count(weibo_id=self.id)
 
     def comments(self):
         cs = Comment.all(weibo_id=self.id)

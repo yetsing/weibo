@@ -184,6 +184,26 @@ class SQLModel(object):
             else:
                 return cls(result)
 
+    @classmethod
+    def count(cls, **kwargs):
+        sql_count = 'SELECT COUNT(*) \n' \
+                    'AS \n\tnum_count \n' \
+                    'FROM \n\t{}'.format(cls.table_name())
+        if len(kwargs) > 0:
+            sql_where = ' AND '.join(
+                ['`{}`=%s'.format(k) for k in kwargs.keys()]
+            )
+            sql_where = '\nWHERE\n\t{}'.format(sql_where)
+            sql_count = '{}{}'.format(sql_count, sql_where)
+
+        values = tuple(kwargs.values())
+
+        cls.restart_connect()
+        with cls.connection.cursor() as cursor:
+            cursor.execute(sql_count, values)
+            result = cursor.fetchone()
+            return result['num_count']
+
     def __repr__(self):
         name = self.__class__.__name__
         properties = ['{}: ({})'.format(k, v) for k, v in self.__dict__.items()]
