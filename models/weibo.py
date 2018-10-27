@@ -9,7 +9,7 @@ class Weibo(SQLModel):
     CREATE TABLE `Weibo` (
         `id` INT NOT NULL AUTO_INCREMENT,
         `content` Text NOT NULL,
-        `user_id` INT NOT NULL,
+        `user_id` INT NOT NULL REFERENCES User(id),
         `created_time` INT NOT NULL,
         `updated_time` INT NOT NULL,
         `comment_count` INT NULL,

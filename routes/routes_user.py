@@ -19,9 +19,6 @@ user = Mou('user')
 
 @user.route('/login')
 def login():
-    """
-    登录页面的路由函数
-    """
     form = request.form
 
     u, result = User.login(form)
@@ -54,9 +51,6 @@ def login_view():
 
 @user.route('/register')
 def register():
-    """
-    注册页面的路由函数
-    """
     form = request.form
 
     u, result = User.register(form)

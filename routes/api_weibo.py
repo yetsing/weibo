@@ -27,9 +27,6 @@ def insert_username(data):
 
 @weibo.route('/index')
 def index():
-    """
-    weibo 首页的路由函数
-    """
     u = current_user()
     return render_template('weibo-index.html', user=u)
 
@@ -82,6 +79,5 @@ def update():
     u = current_user()
     form = request.json
     form['user_id'] = u.id
-    log('api weibo update form', form)
     t = Weibo.update(**form)
     return make_json(t.json())

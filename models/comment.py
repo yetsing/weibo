@@ -9,8 +9,8 @@ class Comment(SQLModel):
         CREATE TABLE `Comment` (
         `id` INT NOT NULL AUTO_INCREMENT,
         `content` Text NOT NULL,
-        `user_id` INT NOT NULL,
-        `weibo_id` INT NOT NULL,
+        `user_id` INT NOT NULL REFERENCES User(id),
+        `weibo_id` INT NOT NULL REFERENCES Weibo(id),
         `created_time` INT NOT NULL,
         `updated_time` INT NOT NULL,
         PRIMARY KEY (`id`)

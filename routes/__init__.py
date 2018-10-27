@@ -7,7 +7,6 @@ from mou import (
 )
 from models.user import User
 from models.session import Session
-from utils import log
 
 
 def current_user():
@@ -26,13 +25,10 @@ def current_user():
 
 def login_required(route_function):
     def f():
-        log('login_required')
         u = current_user()
         if u.is_guest():
-            log('游客用户')
             return redirect('/user/login/view')
         else:
-            log('登录用户', route_function)
             return route_function()
 
     return f
@@ -40,7 +36,6 @@ def login_required(route_function):
 
 def ajax_login_required(route_function):
     def f():
-        log('ajax_login_required')
         u = current_user()
         if u.is_guest():
             d = dict(
@@ -49,7 +44,6 @@ def ajax_login_required(route_function):
             )
             return make_json(d)
         else:
-            log('登录用户', u.username)
             return route_function()
 
     return f
@@ -58,7 +52,6 @@ def ajax_login_required(route_function):
 def owner_required(cls):
     def decorator(route_function):
         def f():
-            log('same_user_required')
             u = current_user()
             if 'id' in request.query:
                 m_id = request.query['id']

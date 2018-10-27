@@ -12,7 +12,6 @@ from routes import (
 
 from models.comment import Comment
 from models.user import User
-from utils import log
 
 comment = Mou('comment')
 
@@ -25,7 +24,7 @@ def insert_username(data):
 
 
 @comment.route('/all')
-def all():
+def get_all():
     u = current_user()
     weibo_id = int(request.query.get('weibo_id'))
     comments = Comment.all(weibo_id=weibo_id, sort_by='created_time')
