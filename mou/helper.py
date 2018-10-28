@@ -29,8 +29,8 @@ class MouTemplate:
         return template.render(*args, **kwargs)
 
     @classmethod
-    def register_filter(cls, filter):
-        cls.e.filters[filter.__name__] = filter
+    def register_filter(cls, func):
+        cls.e.filters[func.__name__] = func
 
 
 def error(status_code=404):

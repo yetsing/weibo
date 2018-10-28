@@ -1,10 +1,7 @@
-import time
-
 import pymysql
 
 import config
 import secret
-from utils import log
 
 
 class SQLModel(object):

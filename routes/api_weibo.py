@@ -13,7 +13,6 @@ from routes import (
 
 from models.weibo import Weibo
 from models.user import User
-from utils import log
 
 weibo = Mou('weibo')
 
@@ -31,10 +30,8 @@ def index():
     return render_template('weibo-index.html', user=u)
 
 
-# 本文件只返回 json 格式的数据
-# 而不是 html 格式的数据
 @weibo.route('/all')
-def all():
+def get_all():
     u = current_user()
     weibos = Weibo.all_json()
     for i, w in enumerate(weibos):
@@ -49,11 +46,10 @@ def all():
 @ajax_login_required
 def add():
     form = request.json
-    # 创建一个 weibo
     u = current_user()
     t = Weibo.add(form, u.id)
-    # 添加用户名和评论
     data = t.json()
+    # 添加用户名和评论
     data['username'] = u.username
     data['comments'] = []
     return make_json(data)

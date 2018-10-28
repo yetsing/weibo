@@ -30,7 +30,6 @@ def get_all():
     comments = Comment.all(weibo_id=weibo_id, sort_by='created_time')
     data = [c.json() for c in comments]
     for d in data:
-        # 添加用户名
         insert_username(d)
     ud = {'username': u.username}
     data.append(ud)
@@ -41,10 +40,8 @@ def get_all():
 @ajax_login_required
 def add():
     form = request.json
-    # 创建一个 comment
     u = current_user()
     c = Comment.add(form, u.id)
-    # 添加用户名
     data = c.json()
     data['username'] = u.username
     return make_json(data)

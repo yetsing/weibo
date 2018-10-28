@@ -1,7 +1,6 @@
 import urllib.parse
 import threading
 
-from utils import log
 import json
 
 
@@ -25,10 +24,8 @@ class Request(threading.local):
 
         path = parts[1]
         self.parse_path(path)
-        log('Request: path 和 query', self.path, self.query)
 
         self.add_headers(h[1:])
-        log('Request: headers 和 cookies', self.headers, self.cookies)
 
     def add_headers(self, header):
         lines = header
@@ -46,16 +43,12 @@ class Request(threading.local):
     @property
     def form(self):
         body = urllib.parse.unquote_plus(self.body)
-        log('form', self.body)
-        log('form', body)
         args = body.split('&')
         f = {}
-        log('args', args)
         try:
             for arg in args:
                 k, v = arg.split('=')
                 f[k] = v
-            log('form() 字典', f)
         finally:
             return f
 

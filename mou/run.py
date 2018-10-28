@@ -1,7 +1,6 @@
 import _thread
 import socket
 
-from utils import log
 from .requset import Request
 from .helper import *
 from .static import static
@@ -24,7 +23,6 @@ def dispatch_request():
     没有处理的 path 会返回 404
     """
     route_function = route_dict.get(request.path, error)
-    log('request', request, route_function)
     if request.path.startswith('/static'):
         return static(request)
     b = route_function()
@@ -40,7 +38,6 @@ def receive_request(connection):
         # 取到的数据长度不够 buffer_size 的时候，说明数据已经取完了。
         if len(r) < buffer_size:
             req = req.decode()
-            log('request\n {}'.format(req))
             return req
 
 
@@ -50,14 +47,10 @@ def process_request(connection):
     """
     with connection:
         r = receive_request(connection)
-        log('request log:\n <{}>'.format(r))
-        try:
-            request.set(r)
-            response = dispatch_request()
-        except:
-            log('Internal Server Error')
-            response = error(500)
-        log("response log:\n <{}>".format(response))
+        request.set(r)
+        response = dispatch_request()
+        # except:
+        #     response = error(500)
         # 把响应发送给客户端
         connection.sendall(response)
 
@@ -66,11 +59,9 @@ def run(host, port):
     """
     启动服务器
     """
-    log('开始运行于', 'http://{}:{}'.format(host, port))
     with socket.socket() as s:
         s.bind((host, port))
         s.listen()
         while True:
             connection, address = s.accept()
-            log('ip {}'.format(address))
             _thread.start_new_thread(process_request, (connection,))

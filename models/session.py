@@ -1,7 +1,7 @@
 import time
 
 from models import SQLModel
-from utils import log
+from models.user import User
 
 
 class Session(SQLModel):
@@ -22,6 +22,17 @@ class Session(SQLModel):
 
     def expired(self):
         now = time.time()
-        result = self.expired_time < now
-        log('expired', result, self.expired_time, now)
-        return result
+        expired = self.expired_time < now
+        if expired:
+            Session.delete(self.id)
+        return expired
+
+    @classmethod
+    def get_user(cls, session_id):
+        s = cls.one(session_id=session_id)
+        if s is None or s.expired():
+            return User.guest()
+        else:
+            user_id = s.user_id
+            u = User.one_for_id(id=user_id)
+            return u

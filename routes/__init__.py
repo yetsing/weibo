@@ -12,13 +12,8 @@ from models.session import Session
 def current_user():
     if 'session_id' in request.cookies:
         session_id = request.cookies['session_id']
-        s = Session.one(session_id=session_id)
-        if s is None or s.expired():
-            return User.guest()
-        else:
-            user_id = s.user_id
-            u = User.one_for_id(id=user_id)
-            return u
+        u = Session.get_user(session_id)
+        return u
     else:
         return User.guest()
 
@@ -58,7 +53,7 @@ def owner_required(cls):
             else:
                 m_id = request.json['id']
             m = cls.one_for_id(id=int(m_id))
-    
+
             if m.user_id == u.id:
                 return route_function()
             else:
@@ -67,9 +62,9 @@ def owner_required(cls):
                     message="权限不足"
                 )
                 return make_json(d)
-    
+
         return f
-    
+
     return decorator
 
 

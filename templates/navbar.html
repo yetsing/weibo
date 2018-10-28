@@ -4,9 +4,9 @@
         <a class="btn box" id="sign_up" href="/register/view">注册</a>
         <a class="btn box" id="sign_in" href="/login/view">登录</a>
         {% else %}
-        <a class="btn box" id="profile" href="/register/view">我的</a>
+        <a class="btn box" id="profile" href="#">我的</a>
         {% endif %}
         <a class="btn box" id="index" href="/weibo/index">主页</a>
     </div>
 </nav>
-    <h1 style="width: 300px; margin: 0px auto; color: gray;">Hello {{ user.username }}</h1>
+<h1 style="width: 300px; margin: 0px auto; color: gray;">Hello {{ user.username }}</h1>

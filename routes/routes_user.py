@@ -11,7 +11,6 @@ from mou import (
 from models.session import Session
 from routes import current_user
 
-from utils import log
 from models.user import User
 
 user = Mou('user')
@@ -20,7 +19,6 @@ user = Mou('user')
 @user.route('/login')
 def login():
     form = request.form
-
     u, result = User.login(form)
 
     session_id = str(uuid.uuid4())
@@ -28,7 +26,8 @@ def login():
         session_id=session_id,
         user_id=u.id,
     )
-    Session.new(form)
+    if not u.is_guest():
+        Session.new(form)
 
     r = redirect('/login/view?result={}'.format(result))
     response = make_response(r)
@@ -52,10 +51,7 @@ def login_view():
 @user.route('/register')
 def register():
     form = request.form
-
     u, result = User.register(form)
-    log('register post', result)
-
     return redirect('/login/view?result={}'.format(result))
 
 
