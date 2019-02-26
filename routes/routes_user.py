@@ -29,8 +29,7 @@ def login():
     if not u.is_guest():
         Session.new(form)
 
-    r = redirect('/login/view?result={}'.format(result))
-    response = make_response(r)
+    response = redirect('/login/view?result={}'.format(result))
     response.set_cookie('session_id', session_id)
     return response
 

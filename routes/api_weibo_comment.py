@@ -48,7 +48,6 @@ def add():
 
 
 @comment.route('/delete')
-@ajax_login_required
 @owner_required(Comment)
 def delete():
     comment_id = int(request.query['id'])
@@ -60,7 +59,6 @@ def delete():
 
 
 @comment.route('/update')
-@ajax_login_required
 @owner_required(Comment)
 def update():
     form = request.json

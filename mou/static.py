@@ -17,7 +17,7 @@ def static(request):
     path = parent + filename
     if not os.path.isfile(path):
         raise FileNotFoundError("No such file or directory: '{}'".format(path))
-    file_type = filename.split('.')[-1]
+    file_type = filename.rsplit('.', 1)[1]
     d = {
         'css': 'text/css',
         'js': 'application/javascript',

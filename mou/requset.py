@@ -72,4 +72,10 @@ class Request(threading.local):
         """
         把 body 中的 json 格式字符串解析成 dict 或者 list 并返回
         """
-        return json.loads(self.body)
+        if hasattr(self, '_json'):
+            return self._json
+        self._json = json.loads(self.body)
+        return self._json
+
+
+request = Request()

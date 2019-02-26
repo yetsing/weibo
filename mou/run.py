@@ -1,35 +1,50 @@
 import _thread
 import socket
 
-from .requset import Request
+from .requset import request
 from .helper import *
 from .static import static
-from .mouse import route_dict
-
-request = Request()
+from .route import route_dict, functions_before_request
 
 
-def finalize_request(content):
-    if isinstance(content, bytes):
-        return content
-    else:
-        r = make_response(content)
-        return r.get_bytes()
+def make_response(resp):
+    if not isinstance(resp, Response):
+        if isinstance(resp, str):
+            resp = Response(resp)
+        else:
+            raise TypeError(
+                'The view function did not return a valid response(string or bytes).'
+            )
+    return resp.content
 
 
-def dispatch_request():
+def preprocess_request():
+    for func in functions_before_request:
+        r = func()
+        if r is not None:
+            return r
+
+
+def response_from_request():
     """
     根据 path 调用相应的处理函数
     没有处理的 path 会返回 404
     """
-    route_function = route_dict.get(request.path, error)
     if request.path.startswith('/static'):
         return static(request)
-    b = route_function()
-    return finalize_request(b)
+    try:
+        resp = preprocess_request()
+        if resp is None:
+            resp = route_dict[request.path]()
+        return make_response(resp)
+    except KeyError:
+        return not_found()
 
 
 def receive_request(connection):
+    """
+    接受请求
+    """
     req = b''
     buffer_size = 521
     while True:
@@ -47,18 +62,21 @@ def process_request(connection):
     """
     with connection:
         r = receive_request(connection)
-        request.set(r)
-        response = dispatch_request()
-        # except:
-        #     response = error(500)
-        # 把响应发送给客户端
-        connection.sendall(response)
+        # 浏览器会发空请求
+        if len(r) > 0:
+            request.set(r)
+            log('{} {}'.format(request.method, request.path))
+            response = response_from_request()
+            connection.sendall(response)
+        else:
+            connection.sendall(b'')
 
 
 def run(host, port):
     """
     启动服务器
     """
+    log('Running on http://{}:{}'.format(host, port))
     with socket.socket() as s:
         s.bind((host, port))
         s.listen()

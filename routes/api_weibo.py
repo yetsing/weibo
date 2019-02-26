@@ -56,7 +56,6 @@ def add():
 
 
 @weibo.route('/delete')
-@ajax_login_required
 @owner_required(Weibo)
 def delete():
     weibo_id = int(request.query['id'])
@@ -69,7 +68,6 @@ def delete():
 
 
 @weibo.route('/update')
-@ajax_login_required
 @owner_required(Weibo)
 def update():
     u = current_user()

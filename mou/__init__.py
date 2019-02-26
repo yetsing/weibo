@@ -1,15 +1,18 @@
-from .mouse import (
+from .route import (
     Mou,
     route,
-    register_route,
+    register_mou,
 )
 from .helper import (
     redirect,
     make_json,
-    MouTemplate,
+)
+from .template import MouTemplate
+from .run import (
+    run,
+    request,
     make_response,
 )
-from .run import run, request
 
 render_template = MouTemplate.render
 register_filter = MouTemplate.register_filter
