@@ -2,6 +2,7 @@ from .route import (
     Mou,
     route,
     register_mou,
+    before_request,
 )
 from .helper import (
     redirect,

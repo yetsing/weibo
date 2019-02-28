@@ -1,10 +1,13 @@
-from mou import render_template, Mou
-from routes import current_user
+from mou import (
+    Mou,
+    request,
+    render_template,
+)
 
 default = Mou('index')
 
 
 @default.route('/')
 def index():
-    u = current_user()
+    u = request.current_user
     return render_template('index.html', username=u.username)

@@ -3,29 +3,19 @@ from mou import (
     request,
     make_json,
 )
-
-from routes import (
-    current_user,
+from .helper import (
+    insert_username,
     owner_required,
     ajax_login_required,
 )
-
 from models.comment import Comment
-from models.user import User
 
 comment = Mou('comment')
 
 
-# 添加用户名
-def insert_username(data):
-    user_id = data.pop('user_id')
-    u = User.one(id=user_id)
-    data['username'] = u.username
-
-
 @comment.route('/all')
 def get_all():
-    u = current_user()
+    u = request.current_user
     weibo_id = int(request.query.get('weibo_id'))
     comments = Comment.all(weibo_id=weibo_id, sort_by='created_time')
     data = [c.json() for c in comments]
@@ -40,7 +30,7 @@ def get_all():
 @ajax_login_required
 def add():
     form = request.json
-    u = current_user()
+    u = request.current_user
     c = Comment.add(form, u.id)
     data = c.json()
     data['username'] = u.username

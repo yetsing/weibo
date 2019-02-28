@@ -14,6 +14,9 @@ class Request(threading.local):
         self.headers = {}
         self.cookies = {}
 
+        # 请求的当前用户
+        self.current_user = None
+
     def set(self, raw_data):
         # 只能 split 一次，因为 body 中可能有换行
         header, self.body = raw_data.split('\r\n\r\n', 1)
@@ -63,7 +66,7 @@ class Request(threading.local):
             query = {}
             for arg in args:
                 k, v = arg.split('=')
-                query[k] = v
+                query[k] = urllib.parse.unquote_plus(v)
             self.path = path
             self.query = query
 

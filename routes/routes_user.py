@@ -1,16 +1,11 @@
 import uuid
-from urllib.parse import unquote_plus
 from mou import (
     Mou,
     request,
     redirect,
-    make_response,
     render_template,
 )
-
 from models.session import Session
-from routes import current_user
-
 from models.user import User
 
 user = Mou('user')
@@ -36,9 +31,8 @@ def login():
 
 @user.route('/login/view')
 def login_view():
-    u = current_user()
+    u = request.current_user
     result = request.query.get('result', '')
-    result = unquote_plus(result)
 
     return render_template(
         'login.html',
@@ -56,9 +50,8 @@ def register():
 
 @user.route('/register/view')
 def register_view():
-    u = current_user()
+    u = request.current_user
     result = request.query.get('result', '')
-    result = unquote_plus(result)
 
     return render_template(
         'register.html',

@@ -1,26 +1,26 @@
 import time
-
 from mou import (
     request,
     redirect,
     make_json,
+    before_request,
 )
 from models.user import User
 from models.session import Session
 
 
+@before_request
 def current_user():
     if 'session_id' in request.cookies:
         session_id = request.cookies['session_id']
-        u = Session.get_user(session_id)
-        return u
+        request.current_user = Session.get_user(session_id)
     else:
-        return User.guest()
+        request.current_user = User.guest()
 
 
 def login_required(route_function):
     def f():
-        u = current_user()
+        u = request.current_user
         if u.is_guest():
             return redirect('/user/login/view')
         else:
@@ -31,7 +31,7 @@ def login_required(route_function):
 
 def ajax_login_required(route_function):
     def f():
-        u = current_user()
+        u = request.current_user
         if u.is_guest():
             d = dict(
                 status="fail",
@@ -47,7 +47,7 @@ def ajax_login_required(route_function):
 def owner_required(cls):
     def decorator(route_function):
         def f():
-            u = current_user()
+            u = request.current_user
             if 'id' in request.query:
                 m_id = request.query['id']
             else:
@@ -73,3 +73,10 @@ def formatted_time(t):
     localtime = time.localtime(t)
     formatted = time.strftime(time_format, localtime)
     return formatted
+
+
+# 添加用户名
+def insert_username(data):
+    user_id = data.pop('user_id')
+    u = User.one_for_id(id=user_id)
+    data['username'] = u.username
