@@ -162,9 +162,3 @@ var updateWeibo = function(event) {
         editButton.classList.remove('active')
     })
 }
-
-var __main = function() {
-    loadWeibos()
-}
-
-__main()

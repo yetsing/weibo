@@ -18,6 +18,7 @@ var bindEvents = function() {
 }
 
 var __main = function() {
+    loadWeibos()
     bindEvents()
 }
 

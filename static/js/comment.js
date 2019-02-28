@@ -82,7 +82,7 @@ var loadComments = function(event) {
     if (self.classList.contains('active')) {
         self.classList.remove('active')
         var weiboCell = self.closest('.weibo-cell')
-        var weiboCommentList = e('.weibo-comment-list')
+        var weiboCommentList = e('.weibo-comment-list', weiboCell)
         weiboCommentList.remove()
     } else if (self.classList.contains('weibo-comment-all')) {
         self.classList.add('active')
