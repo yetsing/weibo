@@ -18,7 +18,7 @@ class Response(object):
             301: 'Moved Permanently',
             302: 'Move temporarily',
         }
-        header = 'HTTP/1.1 {} {}\r\n'.format(self.status_code, phrase[self.status_code])
+        header = 'HTTP/1.0 {} {}\r\n'.format(self.status_code, phrase[self.status_code])
         header += ''.join([
             '{}: {}\r\n'.format(k, v) for k, v in self.headers.items()
         ])

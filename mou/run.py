@@ -11,6 +11,9 @@ def make_response(resp):
     if not isinstance(resp, Response):
         if isinstance(resp, str):
             resp = Response(resp)
+            log(' "{} {}" {}'.format(
+                request.method, request.path, resp.status_code
+            ))
         else:
             raise TypeError(
                 'The view function did not return a valid response(string or bytes).'
@@ -65,10 +68,10 @@ def process_request(connection):
         # 浏览器会发空请求
         if len(r) > 0:
             request.set(r)
-            log('{} {}'.format(request.method, request.path))
             response = response_from_request()
             connection.sendall(response)
         else:
+            log('空请求')
             connection.sendall(b'')
 
 
